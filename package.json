@@ -1,0 +1,16 @@
+{
+  "name": "minfadian-quiz",
+  "version": "1.0.0",
+  "private": true,
+  "description": "民法典宣讲现场扫码答题系统",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "cookie-parser": "^1.4.7",
+    "express": "^4.21.2",
+    "qrcode": "^1.5.4"
+  }
+}

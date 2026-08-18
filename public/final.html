@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>答题总览</title>
+<link rel="stylesheet" href="/screen.css">
+</head>
+<body>
+<div class="screen screen-fixed">
+  <div class="head">
+    <h1>民法典答题 · 总览</h1>
+    <div class="subtitle">前三名 · 实时总排名</div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat"><div class="num" id="st-users">0</div><div class="label">参与人数</div></div>
+    <div class="stat"><div class="num" id="st-answered">0</div><div class="label">答题总数</div></div>
+    <div class="stat"><div class="num" id="st-rate">--</div><div class="label">总体正确率</div></div>
+  </div>
+
+  <!-- 前三名：颁奖台梯度排布（固定显示） -->
+  <div class="podium-step" id="podium"><div class="muted" style="font-size:20px;">等待答题…</div></div>
+
+  <!-- 实时总排名（可滚动） -->
+  <h2 class="rank-title">实时总排名</h2>
+  <div class="rank-scroll">
+    <table class="rank">
+      <thead><tr><th>排名</th><th>昵称</th><th>答对题数</th><th>答题总数</th><th>正确率</th><th>参与板块</th></tr></thead>
+      <tbody id="rank-body"><tr><td colspan="6" class="muted">等待答题…</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="live-hint"><span class="dot"></span>实时更新中 · 最后更新 <span id="update-hint">--:--:--</span></div>
+</div>
+
+<script>
+const fmtTime = (ts) => { const d = new Date(ts); return d.toLocaleTimeString('zh-CN', { hour12: false }); };
+const TITLES = { 1: '学法达人', 2: '普法之星', 3: '用法先锋' };
+const MEDALS = { 1: '🥇', 2: '🥈', 3: '🥉' };
+// HTML 转义（防 XSS：昵称来自用户输入）
+const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+function render(st) {
+  document.getElementById('update-hint').textContent = fmtTime(Date.now());
+  document.getElementById('st-users').textContent = st.totalUsers;
+  document.getElementById('st-answered').textContent = st.totalAnswered;
+  document.getElementById('st-rate').textContent = st.totalAnswered ? Math.round(st.totalCorrect / st.totalAnswered * 100) + '%' : '--';
+
+  // 前三名：颁奖台梯度排布（左第二 → 中第一 → 右第三，台子高低错落）
+  const podium = document.getElementById('podium');
+  podium.innerHTML = '';
+  const slots = [
+    { rank: 2, cls: 'rank2', col: 'col2' },
+    { rank: 1, cls: 'rank1', col: 'col1' },
+    { rank: 3, cls: 'rank3', col: 'col3' },
+  ];
+  slots.forEach(s => {
+    const u = st.users.find(x => x.rank === s.rank) || null;
+    const stepName = s.rank === 1 ? '第一名' : s.rank === 2 ? '第二名' : '第三名';
+    const card = u
+      ? `<div class="honor-card ${s.cls}">
+          <div class="medal">${MEDALS[s.rank]}</div>
+          <div class="title">${TITLES[s.rank]}</div>
+          <div class="name">${esc(u.nickname)}</div>
+          <div class="score">答对 ${u.correct} 题</div>
+        </div>`
+      : `<div class="honor-card ${s.cls} empty"><div class="name">——</div><div class="score">等待产生</div></div>`;
+    const col = document.createElement('div');
+    col.className = 'podium-col ' + s.col;
+    col.innerHTML = `${card}<div class="step h${s.rank}"><span>${stepName}</span></div>`;
+    podium.appendChild(col);
+  });
+
+  // 实时总排名（按答对题数降序，并列并列）
+  const body = document.getElementById('rank-body');
+  body.innerHTML = '';
+  if (!st.users.length) {
+    body.innerHTML = '<tr><td colspan="6" class="muted">暂无答题数据</td></tr>';
+    return;
+  }
+  st.users.forEach(u => {
+    const rate = u.total ? Math.round(u.correct / u.total * 100) : 0;
+    const tr = document.createElement('tr');
+    if (u.rank === 1) tr.className = 'gold-row';
+    tr.innerHTML = `
+      <td>${MEDALS[u.rank] ? MEDALS[u.rank] + ' ' : ''}第 ${u.rank} 名</td>
+      <td>${esc(u.nickname)}</td>
+      <td>${u.correct}</td>
+      <td>${u.total}</td>
+      <td>${rate}%</td>
+      <td>${u.sections}</td>`;
+    body.appendChild(tr);
+  });
+}
+
+function tick() { fetch('/api/state', { cache: 'no-store' }).then(r => r.json()).then(render).catch(() => {}); }
+tick();
+setInterval(tick, 1000);
+</script>
+</body>
+</html>

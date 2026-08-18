@@ -1,0 +1,291 @@
+/* =====================================================
+   深色大屏主题：展示页 + 总览页 + 荣誉页（科技感 · 投屏用）
+   ===================================================== */
+:root {
+  --bg1: #0a1226;
+  --bg2: #0e1c3f;
+  --cyan: #37d5f6;
+  --gold: #ffd700;
+  --green: #4ade80;
+  --red: #f87171;
+  --panel: rgba(255, 255, 255, .055);
+  --panel-border: rgba(120, 180, 255, .28);
+  --text: #eaf2ff;
+  --muted: #8fa7c8;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", -apple-system, sans-serif;
+  color: var(--text);
+  background: radial-gradient(1200px 700px at 50% -12%, #12306b 0%, var(--bg2) 45%, var(--bg1) 75%, #050a16 100%) fixed;
+  min-height: 100vh;
+  line-height: 1.7;
+}
+
+.screen { max-width: 1280px; margin: 0 auto; padding: 30px 28px 60px; }
+
+/* ---------- 大屏标题 ---------- */
+.screen .head { text-align: center; margin-bottom: 26px; }
+.screen .head h1 {
+  font-size: 52px; margin: 0; letter-spacing: 4px;
+  background: linear-gradient(180deg, #ffffff 20%, #9fd0ff 100%);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 30px rgba(55, 213, 246, .35);
+}
+.screen .head .subtitle { font-size: 24px; color: var(--muted); letter-spacing: 2px; margin-top: 6px; }
+
+/* ---------- 大屏统计卡 ---------- */
+.stat-row { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin: 24px 0; }
+.stat {
+  flex: 1; min-width: 180px; max-width: 280px; text-align: center;
+  padding: 24px 14px; border-radius: 18px;
+  background: linear-gradient(160deg, rgba(255,255,255,.09), rgba(255,255,255,.03));
+  border: 1px solid var(--panel-border);
+  box-shadow: 0 0 24px rgba(55,213,246,.12), inset 0 1px 0 rgba(255,255,255,.08);
+  backdrop-filter: blur(6px);
+}
+.stat .num {
+  font-size: 60px; font-weight: 800; line-height: 1.1;
+  background: linear-gradient(180deg, #ffffff, #6fd7ff);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 34px rgba(55, 213, 246, .5);
+}
+.stat .label { font-size: 17px; color: var(--muted); letter-spacing: 2px; }
+
+/* ---------- 每题答题情况（展示页） ---------- */
+.q-item {
+  display: flex; align-items: center; gap: 18px;
+  padding: 16px 22px; margin: 12px 0;
+  border-radius: 14px;
+  background: linear-gradient(160deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+  border: 1px solid var(--panel-border);
+  box-shadow: 0 0 18px rgba(55,213,246,.08);
+}
+.q-item .qtext { flex: 1; font-size: 19px; }
+.q-item .bars { display: flex; gap: 16px; font-size: 17px; white-space: nowrap; }
+.q-item .bars .ok { color: var(--green); font-weight: 700; text-shadow: 0 0 14px rgba(74,222,128,.5); }
+.q-item .bars .no { color: var(--red); font-weight: 700; text-shadow: 0 0 14px rgba(248,113,113,.5); }
+
+/* ---------- 实时动态（展示页） ---------- */
+.feed { margin-top: 18px; }
+.feed .row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 20px; border-bottom: 1px dashed rgba(120,180,255,.22);
+  font-size: 17px;
+}
+.feed .row:first-child { border-top: 1px dashed rgba(120,180,255,.22); }
+.feed .row .ok { color: var(--green); font-weight: 700; }
+
+/* ---------- 双栏布局：两大部分同屏展示 ---------- */
+.display-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; align-items: start; }
+.col { min-width: 0; }
+@media (max-width: 1100px) { .display-grid { grid-template-columns: 1fr; } }
+
+/* ---------- 展示页固定为当前屏幕长宽（仅展示页用 .screen-fixed） ---------- */
+.screen-fixed {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 26px 8px;
+}
+.screen-fixed .head { flex-shrink: 0; margin-bottom: 6px; }
+.screen-fixed .head h1 { font-size: 38px; }
+.screen-fixed .head .subtitle { font-size: 17px; margin-top: 2px; }
+.screen-fixed .stat-row { flex-shrink: 0; margin: 0 0 4px; }
+.screen-fixed .stat { padding: 12px 10px; min-width: 150px; }
+.screen-fixed .stat .num { font-size: 40px; }
+.screen-fixed .live-hint { flex-shrink: 0; margin-top: 6px; padding-top: 8px; }
+.screen-fixed .display-grid {
+  flex: 1;
+  min-height: 0;
+  align-items: stretch;
+}
+.screen-fixed .col {
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 6px;
+  scrollbar-width: thin;
+}
+.screen-fixed .col h2 {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #0e1c3f;
+  padding: 6px 8px;
+  margin: 0 0 8px;
+  font-size: 22px;
+}
+@media (max-width: 1100px) {
+  .screen-fixed { height: auto; overflow: visible; }
+  .screen-fixed .col { overflow-y: visible; }
+}
+
+/* ---------- 最终总览页：前三名颁奖台 + 总排名 同屏 ---------- */
+.screen-fixed .podium-step {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 14px;
+  margin: 2px 0 2px;
+}
+.screen-fixed .podium-col { display: flex; flex-direction: column; align-items: center; }
+.screen-fixed .podium-col .honor-card {
+  padding: 10px 20px;
+  min-width: 170px;
+  animation: none;
+  transform: none;
+  border-radius: 14px 14px 0 0;
+}
+.screen-fixed .podium-col .honor-card.rank1 { transform: scale(1.06); }
+.screen-fixed .podium-col .honor-card.empty { opacity: .55; }
+.screen-fixed .podium-col .honor-card .medal { font-size: 38px; }
+.screen-fixed .podium-col .honor-card .title { font-size: 16px; margin: 2px 0; }
+.screen-fixed .podium-col .honor-card .name { font-size: 22px; }
+.screen-fixed .podium-col .honor-card .score { font-size: 13px; margin-top: 2px; }
+.screen-fixed .podium-col .step {
+  width: 190px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 6px;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 2px;
+  border-radius: 10px 10px 0 0;
+  box-shadow: inset 0 -8px 16px rgba(0,0,0,.18);
+}
+.screen-fixed .podium-col .step.h1 { height: 84px; background: linear-gradient(180deg, #ffd700, #c99700); font-size: 19px; }
+.screen-fixed .podium-col .step.h2 { height: 56px; background: linear-gradient(180deg, #c9d2de, #97a4b5); font-size: 17px; }
+.screen-fixed .podium-col .step.h3 { height: 38px; background: linear-gradient(180deg, #e09645, #b46a20); font-size: 15px; }
+.screen-fixed .rank-title {
+  flex-shrink: 0;
+  margin: 4px 0 6px;
+  font-size: 22px;
+  padding: 4px 8px;
+}
+.screen-fixed .rank-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 6px;
+  scrollbar-width: thin;
+}
+
+/* ---------- 各题答题情况卡片（检察官讲解用） ---------- */
+.q-card {
+  padding: 12px 16px; margin: 10px 0; border-radius: 12px;
+  background: linear-gradient(160deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+  border: 1px solid var(--panel-border);
+  box-shadow: 0 0 14px rgba(55,213,246,.07);
+}
+.q-card .q-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.q-card .q-no { font-size: 13px; color: #8fc6ff; font-weight: 700; letter-spacing: 1px; }
+.q-card .q-meta { font-size: 14px; color: var(--muted); }
+.q-card .q-meta b { color: #fff; }
+.q-card .q-text { font-size: 16px; margin: 6px 0 10px; line-height: 1.5; }
+.q-card .q-opts { display: flex; flex-direction: column; gap: 4px; }
+.q-card .opt-row { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.q-card .opt-label { width: 24px; text-align: right; font-weight: 700; color: var(--muted); }
+.q-card .opt-row.is-correct .opt-label { color: var(--green); }
+.q-card .opt-bar { flex: 1; height: 12px; background: rgba(255,255,255,.08); border-radius: 999px; overflow: hidden; }
+.q-card .opt-bar-in {
+  display: block; height: 100%;
+  background: linear-gradient(90deg, #37d5f6, #3f8efc);
+  border-radius: 999px; transition: width .4s ease;
+}
+.q-card .opt-row.is-correct .opt-bar-in { background: linear-gradient(90deg, #4ade80, #a3e635); }
+.q-card .opt-pct { width: 92px; text-align: left; color: var(--muted); white-space: nowrap; }
+.q-card .opt-row.is-correct .opt-pct { color: var(--green); font-weight: 700; }
+.q-card .opt-count { font-size: 12px; }
+.q-card .q-answer {
+  margin-top: 10px; font-size: 16px; color: var(--green); font-weight: 700;
+  text-shadow: 0 0 12px rgba(74,222,128,.35);
+}
+
+/* 实时动态排名表（紧凑） + 金银铜高亮 */
+table.rank th, table.rank td { padding: 8px 10px; font-size: 15px; }
+table.rank .silver-row { background: rgba(192, 200, 212, .15); }
+table.rank .bronze-row { background: rgba(224, 138, 60, .15); }
+/* 排名列、时间列不换行（防止"🥇 第 1 名"折行） */
+table.rank th:first-child, table.rank td:first-child,
+table.rank th:last-child, table.rank td:last-child { white-space: nowrap; }
+
+/* ---------- 大屏标题 h2 ---------- */
+h2 {
+  font-size: 26px; letter-spacing: 3px; color: #bcd6ff; margin: 34px 0 14px;
+  border-bottom: 2px solid rgba(120,180,255,.25); padding-bottom: 8px;
+}
+
+/* ---------- 各板块汇总（总览页） ---------- */
+.section-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.section-card {
+  padding: 18px;
+  border-radius: 14px;
+  background: linear-gradient(160deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+  border: 1px solid var(--panel-border);
+  box-shadow: 0 0 18px rgba(55,213,246,.08);
+}
+.section-card h3 { margin: 0 0 6px; font-size: 18px; color: #cfe4ff; }
+.section-card .desc { font-size: 15px; color: var(--muted); }
+
+/* ---------- 总排名表 ---------- */
+table.rank {
+  width: 100%; border-collapse: collapse; margin-top: 8px;
+  background: linear-gradient(160deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+  border-radius: 14px; overflow: hidden;
+}
+table.rank th, table.rank td { border: 1px solid rgba(120,180,255,.2); padding: 13px 14px; text-align: center; font-size: 17px; }
+table.rank th {
+  background: rgba(55, 213, 246, .14); color: #aef0ff; letter-spacing: 2px; font-size: 16px;
+}
+table.rank td { color: var(--text); }
+table.rank .gold-row { background: rgba(255, 215, 0, .12); color: var(--gold); font-weight: 700; }
+
+/* ---------- 前三名卡片（总览页颁奖台使用） ---------- */
+.podium { display: flex; justify-content: center; align-items: flex-end; gap: 30px; flex-wrap: wrap; margin-top: 40px; }
+.honor-card {
+  text-align: center; padding: 34px 30px; min-width: 220px;
+  border-radius: 20px; position: relative;
+  background: linear-gradient(170deg, rgba(255,255,255,.10), rgba(255,255,255,.02));
+  border: 1.5px solid var(--panel-border);
+  animation: float 3s ease-in-out infinite;
+}
+.honor-card.rank1 {
+  border-color: var(--gold);
+  box-shadow: 0 0 46px rgba(255, 215, 0, .45);
+  transform: translateY(-16px);
+}
+.honor-card.rank2 { border-color: #c0c8d4; box-shadow: 0 0 30px rgba(192,200,212,.25); }
+.honor-card.rank3 { border-color: #e08a3c; box-shadow: 0 0 30px rgba(224,138,60,.3); }
+.honor-card .medal { font-size: 92px; line-height: 1; filter: drop-shadow(0 4px 14px rgba(255,215,0,.4)); }
+.honor-card .title {
+  font-size: 26px; font-weight: 800; margin: 10px 0; letter-spacing: 3px;
+  background: linear-gradient(90deg, #ffd700, #fff3b0);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.honor-card .name { font-size: 38px; font-weight: 800; text-shadow: 0 0 22px rgba(150,210,255,.5); }
+.honor-card .score { font-size: 18px; color: var(--muted); margin-top: 8px; letter-spacing: 1px; }
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+/* 实时更新提示（呼吸灯） */
+.live-hint {
+  text-align: center; margin-top: 26px; padding-top: 18px;
+  border-top: 1px dashed rgba(120,180,255,.2);
+  color: var(--muted); font-size: 15px; letter-spacing: 2px;
+}
+.live-hint .dot {
+  display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--green); margin-right: 8px; vertical-align: middle;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
+
+/* ---------- 通用 ---------- */
+.hidden { display: none !important; }
+.muted { color: var(--muted); }
+.small { font-size: 12px; }

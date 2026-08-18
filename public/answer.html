@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>参与答题</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="quiz">
+  <div class="qhead" id="qhead">
+    <div class="subtitle" id="subtitle"></div>
+    <h1 id="title">载入中…</h1>
+  </div>
+
+  <!-- 第一步：本地无昵称（token）时，先填写昵称 -->
+  <div class="gate" id="gate">
+    <div class="gate-icon">👤</div>
+    <div class="gate-title">请先填写昵称</div>
+    <p class="muted">昵称用于排行榜和领奖，填写后即可答题</p>
+    <input id="nickname" placeholder="输入你的昵称" maxlength="20" autocomplete="off">
+    <button class="btn gate-btn" id="gate-btn" disabled>开始答题</button>
+    <div class="gate-err hidden" id="gate-err">请先填写昵称</div>
+  </div>
+
+  <!-- 第二步：答题 -->
+  <div id="quiz-wrap" class="hidden">
+    <div class="nick-badge">答题人：<b id="nickname-show"></b></div>
+    <div id="questions"></div>
+    <button class="btn submit" id="submit" disabled>
+      <span class="spinner hidden" id="spinner"></span><span id="submit-text">提交答案</span>
+    </button>
+    <div id="progress" class="muted small" style="text-align:center; margin-top:10px;"></div>
+  </div>
+
+  <!-- 第三步：答题结果 -->
+  <div id="result-wrap" class="hidden">
+    <div class="result-head">
+      <div class="big">✅ 提交成功！</div>
+      <div class="result-score" id="result-score"></div>
+      <div class="result-cum" id="result-cum"></div>
+      <p class="muted">你的答题情况如下，可继续扫其他板块二维码参与答题。</p>
+    </div>
+    <div id="result-list"></div>
+  </div>
+</div>
+
+<script>
+const params = new URLSearchParams(location.search);
+const sectionId = params.get('section');
+const NICK_KEY = 'quiz_nickname';
+const DEV_KEY = 'quiz_device_id';
+const TAG = ['A', 'B', 'C', 'D', 'E'];
+
+// token = 本地已保存的昵称
+let token = localStorage.getItem(NICK_KEY) || '';
+let questions = [];
+let selections = {};
+
+function getDeviceId() {
+  let id = localStorage.getItem(DEV_KEY);
+  if (!id) {
+    id = 'd-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+    localStorage.setItem(DEV_KEY, id);
+  }
+  return id;
+}
+
+// ---------- 加载题目 ----------
+function load() {
+  if (!sectionId) { document.getElementById('title').textContent = '缺少板块参数'; return; }
+  fetch('/api/questions?section=' + encodeURIComponent(sectionId))
+    .then(r => r.json())
+    .then(d => {
+      if (d.error) { document.getElementById('title').textContent = d.error; return; }
+      document.getElementById('title').textContent = d.section.title;
+      document.getElementById('subtitle').textContent = d.section.subtitle || '';
+      document.title = d.section.title + ' · 答题';
+      questions = d.questions;
+      gateBtn.disabled = false;
+      // 本地已有昵称（token）→ 直接答题；没有 → 停在昵称门
+      if (token) enterQuiz();
+    });
+}
+
+// ---------- 第一步：昵称门（填写昵称 → 数据库查重 → 进入答题） ----------
+const nicknameInput = document.getElementById('nickname');
+const gateBtn = document.getElementById('gate-btn');
+const gateErr = document.getElementById('gate-err');
+
+function showGateErr(msg) {
+  gateErr.textContent = msg;
+  gateErr.classList.remove('hidden');
+}
+
+gateBtn.addEventListener('click', () => {
+  const v = nicknameInput.value.trim();
+  if (!v) { showGateErr('请先填写昵称'); return; }
+  gateBtn.disabled = true;
+  gateBtn.textContent = '检查中…';
+  // 提交昵称前先在数据库做唯一性检查
+  fetch('/api/check-nickname?nickname=' + encodeURIComponent(v) + '&deviceId=' + encodeURIComponent(getDeviceId()))
+    .then(r => r.json())
+    .then(d => {
+      if (d.taken) {
+        showGateErr(d.error || '该昵称已被使用，请更换一个昵称');
+        gateBtn.disabled = false;
+        gateBtn.textContent = '开始答题';
+      } else {
+        token = v;
+        localStorage.setItem(NICK_KEY, v);
+        gateErr.classList.add('hidden');
+        enterQuiz();
+      }
+    })
+    .catch(() => { alert('网络错误，请重试'); gateBtn.disabled = false; gateBtn.textContent = '开始答题'; });
+});
+nicknameInput.addEventListener('input', () => gateErr.classList.add('hidden'));
+
+// ---------- 进入答题（只有填完昵称后才会到这里） ----------
+function enterQuiz() {
+  document.getElementById('gate').classList.add('hidden');
+  document.getElementById('nickname-show').textContent = token;
+  // 已提交过该板块 → 直接展示结果；未提交 → 进入答题（加时间戳防止浏览器缓存旧结果）
+  fetch('/api/my-result?section=' + encodeURIComponent(sectionId) + '&nickname=' + encodeURIComponent(token) + '&_=' + Date.now())
+    .then(r => r.json())
+    .then(d => {
+      if (d.submitted) showResults(d.results);
+      else {
+        document.getElementById('quiz-wrap').classList.remove('hidden');
+        renderQuestions();
+        updateSubmit();
+      }
+    });
+}
+
+// ---------- 展示答题结果（提交后 / 再次扫码已提交时） ----------
+function showResults(results) {
+  document.getElementById('quiz-wrap').classList.add('hidden');
+  document.getElementById('result-wrap').classList.remove('hidden');
+  const correctCount = results.filter(r => r.correct).length;
+  document.getElementById('result-score').textContent = '答对 ' + correctCount + ' / ' + results.length + ' 题';
+  const list = document.getElementById('result-list');
+  list.innerHTML = '';
+  results.forEach((r, i) => {
+    const q = questions.find(x => x.id === r.questionId);
+    const isJudge = q ? q.type === 'judge' : false;
+    const div = document.createElement('div');
+    div.className = 'q-result' + (r.correct ? ' is-right' : ' is-wrong');
+    div.innerHTML = `
+      <div class="qno">第 ${i + 1} 题 · ${isJudge ? '判断题' : '单选题'} ${r.correct ? '✅ 答对了' : '❌ 答错了'}</div>
+      <div class="qtext">${q ? q.text : ''}</div>
+      <div class="your">你的答案：<b>${r.yourAnswer || '（未作答）'}</b></div>
+      <div class="right">正确答案：<b>${r.correctAnswer}</b></div>`;
+    list.appendChild(div);
+  });
+  // 当前用户累计答题统计（跨板块）
+  fetch('/api/state').then(r => r.json()).then(st => {
+    const me = st.users.find(u => u.nickname === token);
+    if (me) {
+      const pct = me.total ? Math.round(me.correct / me.total * 100) : 0;
+      document.getElementById('result-cum').textContent =
+        '累计答题 ' + me.total + ' 题 · 答对 ' + me.correct + ' 题（' + pct + '%）· 参与 ' + me.sections + ' 个板块';
+    }
+  }).catch(() => {});
+}
+
+// ---------- 渲染题目 ----------
+function renderQuestions() {
+  const box = document.getElementById('questions');
+  box.innerHTML = '';
+  questions.forEach((q, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'question';
+    const isJudge = q.type === 'judge';
+    const opts = (q.options || []).map((o, oi) => {
+      const tag = isJudge ? '' : `<span class="tag">${TAG[oi]}.</span>`;
+      return `<div class="opt" data-q="${q.id}" data-val="${o}">${tag}${o}</div>`;
+    }).join('');
+    wrap.innerHTML = `
+      <div class="qno">第 ${i + 1} 题 · ${isJudge ? '判断题' : '单选题'}</div>
+      <div class="qtext">${q.text}</div>
+      <div class="opts">${opts}</div>`;
+    box.appendChild(wrap);
+  });
+  box.querySelectorAll('.opt').forEach(el => {
+    el.addEventListener('click', () => {
+      const qid = el.dataset.q, val = el.dataset.val;
+      selections[qid] = val;
+      box.querySelectorAll(`.opt[data-q="${qid}"]`).forEach(o => o.classList.toggle('sel', o.dataset.val === val));
+      updateSubmit();
+    });
+  });
+}
+
+// ---------- 提交控制：只有全部题目答完才可提交 ----------
+function updateSubmit() {
+  const answered = questions.filter(q => selections[q.id]).length;
+  const total = questions.length;
+  const allDone = answered === total;
+  document.getElementById('submit').disabled = !allDone;
+  document.getElementById('progress').textContent = allDone
+    ? '已答 ' + answered + ' / ' + total + ' 题 · 可以提交啦'
+    : '已答 ' + answered + ' / ' + total + ' 题 · 全部答完后可提交';
+}
+
+function resetButton() {
+  document.getElementById('spinner').classList.add('hidden');
+  document.getElementById('submit-text').textContent = '提交答案';
+  updateSubmit();
+}
+
+document.getElementById('submit').addEventListener('click', () => {
+  const answers = questions.map(q => ({ questionId: q.id, answer: selections[q.id] }));
+  const payload = { nickname: token, section: sectionId, answers, deviceId: getDeviceId() };
+  const btn = document.getElementById('submit');
+  btn.disabled = true;
+  document.getElementById('spinner').classList.remove('hidden');
+  document.getElementById('submit-text').textContent = '提交中…';
+  fetch('/api/submit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+    .then(r => r.json())
+    .then(d => {
+      if (d.ok || d.alreadySubmitted) {
+        showResults(d.results || []);
+      } else {
+        alert(d.error || '提交失败，请重试');
+        resetButton();
+      }
+    })
+    .catch(() => { alert('网络错误，请重试'); resetButton(); });
+});
+
+load();
+</script>
+</body>
+</html>

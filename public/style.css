@@ -1,0 +1,233 @@
+/* =====================================================
+   浅色主题：管理台 + 答题页（清爽精致 · 法治蓝）
+   ===================================================== */
+:root {
+  --blue: #0b3d91;
+  --blue2: #1f5fd0;
+  --blue3: #3b82f6;
+  --gold: #d4a017;
+  --red: #dc2626;
+  --green: #16a34a;
+  --bg: #eef2f9;
+  --card: #ffffff;
+  --line: #e2e8f2;
+  --text: #1c2333;
+  --muted: #6b7690;
+  --shadow: 0 8px 24px rgba(11, 61, 145, .10);
+  --shadow-sm: 0 2px 8px rgba(11, 61, 145, .06);
+  --radius: 14px;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", -apple-system, sans-serif;
+  color: var(--text);
+  background: linear-gradient(180deg, #f2f6fc 0%, #e8eef8 100%);
+  min-height: 100vh;
+  line-height: 1.65;
+}
+
+.container { max-width: 1120px; margin: 0 auto; padding: 22px 20px 40px; }
+
+/* ---------- 顶栏 ---------- */
+.topbar {
+  background: linear-gradient(120deg, #0b3d91 0%, #1f5fd0 70%, #3b82f6 100%);
+  color: #fff;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  box-shadow: 0 4px 18px rgba(11, 61, 145, .35);
+  position: sticky; top: 0; z-index: 50;
+  border-bottom: 3px solid var(--gold);
+}
+.topbar h1 { font-size: 20px; margin: 0; letter-spacing: 1px; }
+.topbar .sub { font-size: 13px; opacity: .88; }
+.topbar input[type=password] {
+  padding: 9px 12px; border-radius: 10px; border: none; font-size: 14px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.4);
+}
+
+/* ---------- 卡片 ---------- */
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow-sm);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+h2 { color: var(--blue); font-size: 20px; margin: 26px 0 8px; padding-bottom: 8px; border-bottom: 2px solid #dbe4f5; letter-spacing: 1px; }
+
+/* ---------- 按钮 ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  border: none; border-radius: 10px; padding: 10px 18px;
+  font-size: 14px; cursor: pointer; text-decoration: none; color: #fff;
+  background: linear-gradient(135deg, var(--blue2), var(--blue3));
+  box-shadow: 0 3px 10px rgba(31, 95, 208, .3);
+  transition: transform .15s, box-shadow .15s, opacity .15s;
+}
+.btn:hover { transform: translateY(-1px); box-shadow: 0 5px 16px rgba(31, 95, 208, .4); }
+.btn:active { transform: translateY(0); }
+.btn.gray { background: linear-gradient(135deg, #64748b, #94a3b8); box-shadow: 0 3px 10px rgba(100,116,139,.3); }
+.btn.gold { background: linear-gradient(135deg, #b8860b, #d4a017); box-shadow: 0 3px 10px rgba(212,160,23,.35); }
+.btn.danger { background: linear-gradient(135deg, #b91c1c, #ef4444); box-shadow: 0 3px 10px rgba(220,38,38,.3); }
+.btn.sm { padding: 7px 13px; font-size: 13px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* ---------- 管理台：板块网格 ---------- */
+.section-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 16px;
+  margin-top: 14px;
+}
+.section-card { display: flex; flex-direction: column; gap: 8px; }
+.section-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+.section-card .no { color: var(--muted); font-size: 12px; letter-spacing: .5px; }
+.section-card h3 { margin: 0; font-size: 17px; color: var(--blue); }
+.section-card .desc { font-size: 13px; color: var(--muted); }
+.section-card .qrcode {
+  text-align: center; background: #fff;
+  border: 1px solid var(--line); border-radius: 12px; padding: 10px;
+}
+.section-card .qrcode img { width: 156px; height: 156px; border-radius: 8px; }
+.section-card .actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.section-card .link { font-size: 12px; color: var(--muted); word-break: break-all; background: #f5f8fd; padding: 4px 8px; border-radius: 6px; }
+
+/* ---------- 统计卡（管理台概况） ---------- */
+.stat-row { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin: 20px 0; }
+.stat {
+  flex: 1; min-width: 150px; max-width: 260px; text-align: center;
+  padding: 20px 12px; border-radius: var(--radius); color: #fff;
+  box-shadow: var(--shadow);
+}
+.stat:nth-child(1) { background: linear-gradient(135deg, #0b3d91, #2f6fd0); }
+.stat:nth-child(2) { background: linear-gradient(135deg, #b8860b, #e5b53a); }
+.stat:nth-child(3) { background: linear-gradient(135deg, #15803d, #22c55e); }
+.stat .num { font-size: 46px; font-weight: 800; text-shadow: 0 2px 6px rgba(0,0,0,.25); }
+.stat .label { font-size: 15px; opacity: .92; }
+
+/* ---------- 答题页（手机） ---------- */
+.quiz { max-width: 580px; margin: 0 auto; padding: 18px 16px 40px; }
+.quiz .qhead { text-align: center; margin-bottom: 18px; }
+.quiz .qhead h1 {
+  font-size: 24px; color: var(--blue); margin: 4px 0;
+  background: linear-gradient(120deg, #0b3d91, #3b82f6); -webkit-background-clip: text;
+  background-clip: text; -webkit-text-fill-color: transparent;
+}
+.quiz .qhead .subtitle { font-size: 14px; color: var(--muted); }
+.quiz .nick-row { display: flex; gap: 8px; margin-bottom: 14px; }
+.quiz .nick-row input {
+  flex: 1; padding: 12px 14px; font-size: 16px;
+  border: 1.5px solid var(--line); border-radius: 12px; outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.quiz .nick-row input:focus { border-color: var(--blue3); box-shadow: 0 0 0 3px rgba(59,130,246,.15); }
+.quiz .question {
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  padding: 16px; margin-bottom: 14px; box-shadow: var(--shadow-sm);
+}
+.quiz .question .qno {
+  font-size: 12px; color: var(--blue2); font-weight: 700; letter-spacing: .5px;
+  background: #eaf1fc; display: inline-block; padding: 2px 10px; border-radius: 999px;
+}
+.quiz .question .qtext { font-size: 17px; margin: 10px 0 14px; line-height: 1.6; }
+.quiz .opts { display: flex; flex-wrap: wrap; gap: 10px; }
+.quiz .opt {
+  flex: 1 1 44%; padding: 13px 10px;
+  border: 2px solid var(--line); border-radius: 12px;
+  font-size: 15px; text-align: center; cursor: pointer; background: #fff;
+  user-select: none; transition: all .15s;
+}
+.quiz .opt:hover { border-color: var(--blue3); background: #f2f7ff; }
+.quiz .opt.sel {
+  border-color: var(--blue2);
+  background: linear-gradient(135deg, #eaf1fc, #dbe7fb);
+  color: var(--blue); font-weight: 700;
+  box-shadow: 0 2px 8px rgba(31,95,208,.2);
+}
+.quiz .opt .tag { font-weight: 700; margin-right: 6px; }
+.quiz .submit {
+  width: 100%; padding: 15px; font-size: 18px; margin-top: 6px;
+  border-radius: 14px;
+}
+.quiz .success { text-align: center; padding: 50px 20px; animation: fadeUp .5s ease; }
+.quiz .success .big { font-size: 28px; font-weight: 800; color: var(--green); }
+.quiz .success .big { animation: bounce .6s ease; }
+@keyframes bounce { 0% { transform: scale(.6); opacity: 0; } 60% { transform: scale(1.1); } 100% { transform: scale(1); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+/* ---------- 通用 ---------- */
+.hidden { display: none !important; }
+.muted { color: var(--muted); }
+.small { font-size: 12px; }
+
+/* 提交按钮加载转圈 */
+.spinner {
+  display: inline-block; width: 16px; height: 16px;
+  border: 3px solid rgba(255,255,255,.4); border-top-color: #fff;
+  border-radius: 50%; animation: spin .7s linear infinite;
+  vertical-align: -3px; margin-right: 6px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- 答题页第一步：昵称门 ---------- */
+.gate {
+  max-width: 420px; margin: 34px auto 0; text-align: center;
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 34px 26px; box-shadow: var(--shadow);
+  animation: fadeUp .4s ease;
+}
+.gate .gate-icon { font-size: 54px; line-height: 1; }
+.gate .gate-title { font-size: 21px; font-weight: 800; color: var(--blue); margin: 12px 0 4px; letter-spacing: 1px; }
+.gate p { margin: 4px 0 0; }
+.gate input {
+  width: 100%; padding: 13px 14px; font-size: 17px; margin-top: 18px;
+  border: 1.5px solid var(--line); border-radius: 12px; outline: none; text-align: center;
+  transition: border-color .15s, box-shadow .15s;
+}
+.gate input:focus { border-color: var(--blue3); box-shadow: 0 0 0 3px rgba(59,130,246,.15); }
+.gate .gate-btn { width: 100%; margin-top: 16px; padding: 14px; font-size: 17px; border-radius: 12px; }
+.gate-err { color: var(--red); font-size: 13px; margin-top: 12px; }
+
+/* 答题人徽标 */
+.nick-badge {
+  display: inline-block; font-size: 14px; margin-bottom: 14px;
+  background: linear-gradient(135deg, #eaf1fc, #dbe7fb);
+  color: var(--blue); padding: 7px 16px; border-radius: 999px;
+}
+.nick-badge a { color: var(--muted); font-size: 12px; margin-left: 4px; text-decoration: none; }
+
+/* ---------- 答题结果页 ---------- */
+.result-head { text-align: center; margin: 6px 0 22px; }
+.result-head .big { font-size: 24px; font-weight: 800; color: var(--green); animation: bounce .6s ease; }
+.result-score { font-size: 36px; font-weight: 800; color: var(--blue); margin-top: 6px; }
+.result-cum {
+  display: inline-block; margin-top: 10px; padding: 7px 18px;
+  background: linear-gradient(135deg, #eaf1fc, #dbe7fb);
+  color: var(--blue2); font-size: 15px; font-weight: 700; border-radius: 999px;
+}
+.q-result {
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  padding: 16px 18px; margin-bottom: 14px; box-shadow: var(--shadow-sm);
+  border-left: 6px solid var(--green);
+  animation: fadeUp .4s ease;
+}
+.q-result.is-wrong { border-left-color: var(--red); }
+.q-result .qno { font-size: 12px; font-weight: 700; }
+.q-result.is-right .qno { color: var(--green); }
+.q-result.is-wrong .qno { color: var(--red); }
+.q-result .qtext { font-size: 17px; margin: 8px 0 10px; line-height: 1.6; }
+.q-result .your { font-size: 15px; }
+.q-result .right { font-size: 15px; font-weight: 700; margin-top: 2px; color: var(--green); }
+.q-result.is-wrong .right { color: var(--red); }
+.q-result .explain {
+  margin-top: 10px; padding: 10px 12px; background: #f5f8fd;
+  border-radius: 10px; font-size: 14px; color: var(--muted);
+}

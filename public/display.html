@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>实时答题展示</title>
+<link rel="stylesheet" href="/screen.css">
+</head>
+<body>
+<div class="screen screen-fixed">
+  <div class="head">
+    <h1 id="title">实时答题</h1>
+    <div class="subtitle" id="subtitle"></div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat"><div class="num" id="st-participants">0</div><div class="label">参与人数</div></div>
+    <div class="stat"><div class="num" id="st-rate">--</div><div class="label">总体正确率</div></div>
+  </div>
+
+  <!-- 双栏布局：两大部分同屏展示 -->
+  <div class="display-grid">
+    <div class="col">
+      <h2>一、各题答题情况</h2>
+      <div id="questions"></div>
+    </div>
+    <div class="col">
+      <h2>二、实时动态排名</h2>
+      <table class="rank" id="rank">
+        <thead><tr><th>排名</th><th>昵称</th><th>答对/总数</th><th>正确率</th><th>提交时间</th></tr></thead>
+        <tbody id="rank-body"><tr><td colspan="5" class="muted">等待答题…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="live-hint"><span class="dot"></span>实时更新中 · 最后更新 <span id="update-hint">--:--:--</span></div>
+</div>
+
+<script>
+const params = new URLSearchParams(location.search);
+const sectionId = params.get('section');
+const fmtTime = (ts) => { const d = new Date(ts); return d.toLocaleTimeString('zh-CN', { hour12: false }); };
+const MEDALS = { 1: '🥇', 2: '🥈', 3: '🥉' };
+const RANK_CLS = { 1: 'gold-row', 2: 'silver-row', 3: 'bronze-row' };
+const LETTER = ['A', 'B', 'C', 'D', 'E', 'F'];
+// HTML 转义（防 XSS：昵称来自用户输入）
+const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+function render(st) {
+  const sec = st.sections.find(s => s.id === sectionId);
+  if (!sec) { document.getElementById('title').textContent = '板块不存在'; return; }
+  document.getElementById('title').textContent = sec.title;
+  document.getElementById('subtitle').textContent = sec.subtitle || '';
+  document.title = sec.title + ' · 实时展示';
+  document.getElementById('update-hint').textContent = fmtTime(Date.now());
+  document.getElementById('st-participants').textContent = sec.participants;
+  document.getElementById('st-rate').textContent = sec.answeredTotal ? Math.round(sec.correctTotal / sec.answeredTotal * 100) + '%' : '--';
+
+  // 一、各题答题情况：回答人数、正确率、各选项选择占比、正确答案
+  const box = document.getElementById('questions');
+  box.innerHTML = '';
+  sec.questions.forEach((q, i) => {
+    const optsHtml = (q.options || []).map((o, oi) => {
+      const isJudge = q.type === 'judge';
+      const label = isJudge ? o.text : LETTER[oi];
+      const correct = o.text === q.correctAnswer;
+      return `
+        <div class="opt-row ${correct ? 'is-correct' : ''}">
+          <span class="opt-label">${label}</span>
+          <span class="opt-bar"><span class="opt-bar-in" style="width:${o.pct}%"></span></span>
+          <span class="opt-pct">${o.pct}%<span class="opt-count">（${o.count}人）</span></span>
+        </div>`;
+    }).join('');
+    const div = document.createElement('div');
+    div.className = 'q-card';
+    div.innerHTML = `
+      <div class="q-top">
+        <span class="q-no">第 ${i + 1} 题 · ${q.type === 'judge' ? '判断题' : '单选题'}</span>
+        <span class="q-meta">👥 回答 ${q.answered} 人 · 🎯 正确率 <b>${q.rate}%</b></span>
+      </div>
+      <div class="q-text">${q.text}</div>
+      <div class="q-opts">${optsHtml}</div>
+      <div class="q-answer">✅ 正确答案：<b>${q.correctAnswer}</b></div>`;
+    box.appendChild(div);
+  });
+
+  // 二、实时动态排名
+  const body = document.getElementById('rank-body');
+  body.innerHTML = '';
+  if (!sec.ranking.length) {
+    body.innerHTML = '<tr><td colspan="5" class="muted">等待答题…</td></tr>';
+    return;
+  }
+  sec.ranking.forEach(u => {
+    const tr = document.createElement('tr');
+    tr.className = RANK_CLS[u.rank] || '';
+    tr.innerHTML = `
+      <td>${MEDALS[u.rank] ? MEDALS[u.rank] + ' ' : ''}第 ${u.rank} 名</td>
+      <td>${esc(u.nickname)}</td>
+      <td>${u.correct} / ${u.total}</td>
+      <td>${u.rate}%</td>
+      <td class="muted">${fmtTime(u.ts)}</td>`;
+    body.appendChild(tr);
+  });
+}
+
+function tick() {
+  fetch('/api/state', { cache: 'no-store' }).then(r => r.json()).then(render).catch(() => {});
+}
+tick();
+setInterval(tick, 1000);
+</script>
+</body>
+</html>

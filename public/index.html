@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>民法典宣讲答题系统 · 管理台</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="topbar">
+  <div>
+    <h1>民法典宣讲答题系统 · 管理台</h1>
+    <div class="sub">按板块生成二维码，投屏实时展示答题情况</div>
+  </div>
+  <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+    <a class="btn gold" href="/final" target="_blank">最终总览页</a>
+  </div>
+</div>
+
+<div class="container">
+  <div class="stat-row" id="overview"></div>
+  <h2>答题板块（共 <span id="sec-count">0</span> 个，每个板块一个二维码）</h2>
+  <div class="section-grid" id="grid"></div>
+</div>
+
+<script>
+let baseUrl = location.origin;
+let sections = [];
+
+function loadMeta() {
+  fetch('/api/meta').then(r => r.json()).then(m => {
+    if (m.publicUrl) baseUrl = m.publicUrl;
+    loadSections();
+  });
+}
+function loadSections() {
+  fetch('/api/sections').then(r => r.json()).then(list => {
+    sections = list;
+    document.getElementById('sec-count').textContent = list.length;
+    renderGrid();
+  });
+}
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  sections.forEach((s, i) => {
+    const card = document.createElement('div');
+    card.className = 'card section-card';
+    const url = baseUrl + '/answer?section=' + s.id;
+    const displayUrl = baseUrl + '/display?section=' + s.id;
+    card.innerHTML = `
+      <div class="no">板块 ${i + 1} · ${s.questionCount} 题</div>
+      <h3>${s.title}</h3>
+      <div class="desc">${s.subtitle || ''}</div>
+      <div class="qrcode"><img id="qr-${s.id}" alt="二维码" title="${s.title}"></div>
+      <div class="link">${url}</div>
+      <div class="actions">
+        <button class="btn sm" onclick="downloadQR('${s.id}')">下载二维码</button>
+        <a class="btn sm gray" href="/display?section=${s.id}" target="_blank">实时展示页</a>
+        <button class="btn sm" onclick="copyText('${url}', this)">复制答题链接</button>
+        <button class="btn sm gray" onclick="copyText('${displayUrl}', this)">复制展示链接</button>
+      </div>`;
+    grid.appendChild(card);
+    fetch('/api/qr?t=' + encodeURIComponent(url)).then(r => r.json()).then(d => {
+      const img = document.getElementById('qr-' + s.id);
+      if (img && d.dataUrl) img.src = d.dataUrl;
+    });
+  });
+}
+
+function downloadQR(id) {
+  const s = sections.find(x => x.id === id);
+  const url = baseUrl + '/answer?section=' + id;
+  fetch('/api/qr?t=' + encodeURIComponent(url)).then(r => r.json()).then(d => {
+    const img = new Image();
+    img.onload = () => {
+      const pad = 50, qr = 460, gap = 40, titleH = 46, hintH = 34;
+      const c = document.createElement('canvas');
+      c.width = qr + pad * 2;
+      c.height = pad + qr + gap + titleH + hintH + pad;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, c.width, c.height);
+      ctx.drawImage(img, pad, pad, qr, qr);
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#0b3d91';
+      ctx.font = 'bold 34px "PingFang SC","Microsoft YaHei",sans-serif';
+      ctx.fillText(s.title, c.width / 2, pad + qr + gap + 8);
+      ctx.fillStyle = '#666666';
+      ctx.font = '24px "PingFang SC","Microsoft YaHei",sans-serif';
+      ctx.fillText('手机扫一扫 · 参与答题', c.width / 2, pad + qr + gap + 8 + titleH);
+      const a = document.createElement('a');
+      a.href = c.toDataURL('image/png');
+      a.download = '答题二维码-' + s.title + '.png';
+      document.body.appendChild(a); a.click(); a.remove();
+    };
+    img.src = d.dataUrl;
+  });
+}
+
+function copyText(t, btn) {
+  const ok = () => {
+    // 复制成功后仅按钮文字反馈，不弹框
+    if (btn) {
+      const old = btn.textContent;
+      btn.textContent = '✓ 已复制';
+      setTimeout(() => { btn.textContent = old; }, 1500);
+    }
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(t).then(ok).catch(() => fallbackCopy(t, ok));
+  } else {
+    fallbackCopy(t, ok);
+  }
+}
+function fallbackCopy(t, ok) {
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = t;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    ok && ok();
+  } catch (e) { /* 静默失败 */ }
+}
+
+function refreshOverview() {
+  fetch('/api/state').then(r => r.json()).then(st => {
+    const ov = document.getElementById('overview');
+    ov.innerHTML = `
+      <div class="stat"><div class="num">${st.totalUsers}</div><div class="label">参与人数</div></div>
+      <div class="stat"><div class="num">${st.totalAnswered}</div><div class="label">已答题目</div></div>
+      <div class="stat"><div class="num">${st.totalCorrect}</div><div class="label">答对题目</div></div>`;
+  });
+}
+
+loadMeta();
+refreshOverview();
+setInterval(refreshOverview, 2000);
+</script>
+</body>
+</html>
