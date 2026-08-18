@@ -104,7 +104,30 @@ N=500 POLLS=100 node tools/stress-test.js
 
 > 注意：压测会在数据库写入大量测试数据，压完请清空（停止服务后删除 `data/quiz.db`）。
 
-## 九、修改题目
+## 九、实战教训与常见问题排查（重要）
+
+以下问题都曾在真实部署中踩过，**已全部在 `deploy.sh` v2 和代码中加固**，但了解原因有助于手动排查：
+
+| # | 问题 | 原因 | 修复/排查 |
+|---|---|---|---|
+| 1 | 服务起不来，`pm2` 显示 `errored`、日志空、`node server.js` 段错误 | Node 版本 < 22，better-sqlite3 原生模块 ABI 不兼容 | 升级 Node 22：`curl -fsSL https://deb.nodesource.com/setup_22.x \| bash - && apt-get install -y nodejs`，然后 `rm -rf node_modules && npm install --production` |
+| 2 | 链接变成 `https://https://域名/...` | `PUBLIC_URL` 或域名参数带了协议头，重复拼接 | 代码已自动纠正重复协议头；部署时域名参数不带 `https://` |
+| 3 | 域名访问显示 `Welcome to nginx!`（默认页） | nginx 默认站点抢了域名，或 `server_name` 写成了带 `https://` 的坏值 | 删除 `sites-enabled/default`；确认 `server_name` 为干净域名 |
+| 4 | HTTPS 连不上（`Connection refused` 443） | 重写 nginx 配置时覆盖了 certbot 加的 SSL 配置 | 重新执行 `certbot --nginx -d 域名`；或重跑 `deploy.sh`（v2 已幂等，不覆盖已有 SSL） |
+| 5 | 安装时报 `Could not get lock /var/lib/dpkg/lock-frontend` | 系统自动更新（unattended-upgrades）占用 apt | 等待几分钟自动释放（脚本已自动等待）；不要 `rm` 锁文件 |
+| 6 | 服务器重启后服务没了 | PM2 未配置开机自启 | `pm2 startup systemd -u root --hp /root && pm2 save`（脚本已自动完成） |
+| 7 | 改了 `PUBLIC_URL` 不生效 | pm2 记住了旧的环境变量 | `pm2 delete quiz` 后重新 `pm2 start`（脚本已自动处理） |
+| 8 | certbot 报 `appears to be a URL` | 域名参数带了 `https://` | `certbot --nginx -d 域名`（不带协议头） |
+
+**通用排查三连**：
+
+```bash
+pm2 logs quiz --lines 20      # 看应用报错
+ss -tlnp | grep -E ':(80|443|3000)'   # 看端口监听
+curl http://127.0.0.1:3000/api/meta   # 看 PUBLIC_URL 是否正确
+```
+
+## 十、修改题目
 
 题库在 `questions.json`（项目根目录），结构为「板块 → 题目」，字段：
 
