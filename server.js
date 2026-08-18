@@ -135,6 +135,7 @@ function computeState() {
         id: q.id,
         text: q.text,
         type: q.type,
+        background: q.background,
         correct,
         wrong,
         answered,
@@ -229,7 +230,7 @@ app.get('/api/questions', (req, res) => {
   if (!sec) return res.status(404).json({ ok: false, error: '板块不存在' });
   res.json({
     section: { id: sec.id, title: sec.title, subtitle: sec.subtitle },
-    questions: sec.questions.map((q) => ({ id: q.id, type: q.type, text: q.text, options: q.options })),
+    questions: sec.questions.map((q) => ({ id: q.id, type: q.type, text: q.text, options: q.options, background: q.background })),
   });
 });
 

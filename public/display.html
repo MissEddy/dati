@@ -59,6 +59,7 @@ function render(st) {
   // 一、各题答题情况：回答人数、正确率、各选项选择占比、正确答案
   const box = document.getElementById('questions');
   box.innerHTML = '';
+  let lastBg = '';
   sec.questions.forEach((q, i) => {
     const optsHtml = (q.options || []).map((o, oi) => {
       const isJudge = q.type === 'judge';
@@ -71,6 +72,11 @@ function render(st) {
           <span class="opt-pct">${o.pct}%<span class="opt-count">（${o.count}人）</span></span>
         </div>`;
     }).join('');
+    // 案例背景：同一故事的连续题目只展示一次
+    const bgHtml = (q.background && q.background !== lastBg)
+      ? `<div class="q-bg">📖 ${q.background}</div>`
+      : '';
+    lastBg = q.background || '';
     const div = document.createElement('div');
     div.className = 'q-card';
     div.innerHTML = `
@@ -78,6 +84,7 @@ function render(st) {
         <span class="q-no">第 ${i + 1} 题 · ${q.type === 'judge' ? '判断题' : '单选题'}</span>
         <span class="q-meta">👥 回答 ${q.answered} 人 · 🎯 正确率 <b>${q.rate}%</b></span>
       </div>
+      ${bgHtml}
       <div class="q-text">${q.text}</div>
       <div class="q-opts">${optsHtml}</div>
       <div class="q-answer">✅ 正确答案：<b>${q.correctAnswer}</b></div>`;

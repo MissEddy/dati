@@ -169,6 +169,7 @@ function showResults(results) {
 function renderQuestions() {
   const box = document.getElementById('questions');
   box.innerHTML = '';
+  let lastBg = '';
   questions.forEach((q, i) => {
     const wrap = document.createElement('div');
     wrap.className = 'question';
@@ -177,8 +178,14 @@ function renderQuestions() {
       const tag = isJudge ? '' : `<span class="tag">${TAG[oi]}.</span>`;
       return `<div class="opt" data-q="${q.id}" data-val="${o}">${tag}${o}</div>`;
     }).join('');
+    // 案例背景：同一故事的连续题目只展示一次
+    const bgHtml = (q.background && q.background !== lastBg)
+      ? `<div class="q-bg"><div class="q-bg-label">📖 案例背景</div><div class="q-bg-text">${q.background}</div></div>`
+      : '';
+    lastBg = q.background || '';
     wrap.innerHTML = `
       <div class="qno">第 ${i + 1} 题 · ${isJudge ? '判断题' : '单选题'}</div>
+      ${bgHtml}
       <div class="qtext">${q.text}</div>
       <div class="opts">${opts}</div>`;
     box.appendChild(wrap);
