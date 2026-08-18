@@ -28,6 +28,8 @@
   <div class="live-hint"><span class="dot"></span>实时更新中 · 最后更新 <span id="update-hint">--:--:--</span></div>
 </div>
 
+<div class="toast-box" id="toast-box"></div>
+
 <script>
 const fmtTime = (ts) => { const d = new Date(ts); return d.toLocaleTimeString('zh-CN', { hour12: false }); };
 const TITLES = { 1: '学法达人', 2: '普法之星', 3: '用法先锋' };
@@ -39,6 +41,16 @@ function render(st) {
   document.getElementById('update-hint').textContent = fmtTime(Date.now());
 
   // 前三名：颁奖台梯度排布（左第二 → 中第一 → 右第三，台子高低错落）
+  // 榜首易主检测（PK 感）
+  const prevTop1 = window._prevTop1 || '';
+  const curTop1 = st.users.length ? st.users[0].nickname : '';
+  if (prevTop1 && curTop1 && prevTop1 !== curTop1) {
+    queueToast('👑 第一名易主！' + curTop1 + ' 登上榜首');
+    const c = document.querySelector('.podium-col.col1 .honor-card');
+    if (c) c.classList.add('podium-pulse');
+  }
+  window._prevTop1 = curTop1;
+
   const podium = document.getElementById('podium');
   podium.innerHTML = '';
   const slots = [
@@ -49,12 +61,15 @@ function render(st) {
   slots.forEach(s => {
     const u = st.users.find(x => x.rank === s.rank) || null;
     const stepName = s.rank === 1 ? '第一名' : s.rank === 2 ? '第二名' : '第三名';
+    const gapLine = (s.rank === 1 && u && st.users[1])
+      ? `<div class="score">答对 ${u.correct} 题 · 领先第 2 名 ${u.correct - st.users[1].correct} 题</div>`
+      : `<div class="score">答对 ${u ? u.correct : 0} 题</div>`;
     const card = u
       ? `<div class="honor-card ${s.cls}">
           <div class="medal">${MEDALS[s.rank]}</div>
           <div class="title">${TITLES[s.rank]}</div>
           <div class="name">${esc(u.nickname)}</div>
-          <div class="score">答对 ${u.correct} 题</div>
+          ${gapLine}
         </div>`
       : `<div class="honor-card ${s.cls} empty"><div class="name">——</div><div class="score">等待产生</div></div>`;
     const col = document.createElement('div');
@@ -63,17 +78,22 @@ function render(st) {
     podium.appendChild(col);
   });
 
-  // 实时总排名（按答对题数降序，并列并列）
+  // 实时总排名（按答对题数降序，并列并列）+ 新提交/变化提示
   const body = document.getElementById('rank-body');
   body.innerHTML = '';
   if (!st.users.length) {
     body.innerHTML = '<tr><td colspan="6" class="muted">暂无答题数据</td></tr>';
+    window._prevUsers = {};
     return;
   }
+  const prevUsers = window._prevUsers || {};
+  const nowUsers = {};
   st.users.forEach(u => {
+    nowUsers[u.nickname] = u.correct;
     const rate = u.total ? Math.round(u.correct / u.total * 100) : 0;
     const tr = document.createElement('tr');
     if (u.rank === 1) tr.className = 'gold-row';
+    if (!(u.nickname in prevUsers)) tr.classList.add('flash-new');
     tr.innerHTML = `
       <td>${MEDALS[u.rank] ? MEDALS[u.rank] + ' ' : ''}第 ${u.rank} 名</td>
       <td>${esc(u.nickname)}</td>
@@ -82,7 +102,22 @@ function render(st) {
       <td>${rate}%</td>
       <td>${u.sections}</td>`;
     body.appendChild(tr);
+    if (!(u.nickname in prevUsers)) {
+      queueToast('🎉 ' + u.nickname + ' 加入答题');
+    } else if (prevUsers[u.nickname] < u.correct) {
+      queueToast('📈 ' + u.nickname + ' 答完新板块，累计答对 ' + u.correct + ' 题');
+    }
   });
+  window._prevUsers = nowUsers;
+}
+
+function queueToast(msg) {
+  const box = document.getElementById('toast-box');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  box.appendChild(el);
+  setTimeout(() => { el.remove(); }, 3000);
 }
 
 function tick() { fetch('/api/state', { cache: 'no-store' }).then(r => r.json()).then(render).catch(() => {}); }

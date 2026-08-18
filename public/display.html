@@ -21,6 +21,7 @@
     </div>
     <div class="col">
       <h2>二、实时动态排名</h2>
+      <div class="pk-status" id="pk-status"></div>
       <table class="rank" id="rank">
         <thead><tr><th>排名</th><th>昵称</th><th>答对/总数</th><th>正确率</th><th>提交时间</th></tr></thead>
         <tbody id="rank-body"><tr><td colspan="5" class="muted">等待答题…</td></tr></tbody>
@@ -30,6 +31,8 @@
 
   <div class="live-hint"><span class="dot"></span>实时更新中 · 最后更新 <span id="update-hint">--:--:--</span></div>
 </div>
+
+<div class="toast-box" id="toast-box"></div>
 
 <script>
 const params = new URLSearchParams(location.search);
@@ -89,11 +92,26 @@ function render(st) {
   body.innerHTML = '';
   if (!sec.ranking.length) {
     body.innerHTML = '<tr><td colspan="5" class="muted">等待答题…</td></tr>';
+    window._prevRank = {};
     return;
   }
+  // 领先状态（PK 感）
+  const pk = document.getElementById('pk-status');
+  if (sec.ranking.length >= 2) {
+    const gap = sec.ranking[0].correct - sec.ranking[1].correct;
+    pk.textContent = '👑 ' + sec.ranking[0].nickname + ' 暂列第一' + (gap > 0 ? ' · 领先 ' + gap + ' 题' : '');
+  } else {
+    pk.textContent = '👑 ' + sec.ranking[0].nickname + ' 暂列第一';
+  }
+  // 检测新提交（实时性：某人刚答完）
+  const prevRank = window._prevRank || {};
+  const nowRank = {};
   sec.ranking.forEach(u => {
+    nowRank[u.nickname] = u.correct;
     const tr = document.createElement('tr');
+    const isNew = !(u.nickname in prevRank);
     tr.className = RANK_CLS[u.rank] || '';
+    if (isNew) tr.classList.add('flash-new');
     tr.innerHTML = `
       <td>${MEDALS[u.rank] ? MEDALS[u.rank] + ' ' : ''}第 ${u.rank} 名</td>
       <td>${esc(u.nickname)}</td>
@@ -101,7 +119,18 @@ function render(st) {
       <td>${u.rate}%</td>
       <td class="muted">${fmtTime(u.ts)}</td>`;
     body.appendChild(tr);
+    if (isNew) queueToast('🎉 ' + u.nickname + ' 刚刚答完 · 答对 ' + u.correct + '/' + u.total + ' 题');
   });
+  window._prevRank = nowRank;
+}
+
+function queueToast(msg) {
+  const box = document.getElementById('toast-box');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  box.appendChild(el);
+  setTimeout(() => { el.remove(); }, 3000);
 }
 
 function tick() {
