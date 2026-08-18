@@ -18,9 +18,19 @@ PORT="3000"
 echo "=============================================="
 echo " 步骤 1/6：检查/安装 Node.js"
 echo "=============================================="
+# 检查 Node：缺失或版本 < 22 都装 22（better-sqlite3 v13 要求 >=22）
+NEED_NODE=0
 if ! command -v node >/dev/null 2>&1; then
-  echo "未检测到 Node.js，安装 v20 ..."
-  curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+  NEED_NODE=1
+else
+  NODE_MAJOR=$(node -v 2>/dev/null | sed 's/v\([0-9]*\).*/\1/')
+  if [ "${NODE_MAJOR:-0}" -lt 22 ]; then
+    echo "检测到 Node v${NODE_MAJOR}（低于 22），将升级到 v22 ..."
+    NEED_NODE=1
+  fi
+fi
+if [ "$NEED_NODE" = "1" ]; then
+  curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
   apt-get install -y nodejs
 fi
 echo "Node: $(node -v)  npm: $(npm -v)"
