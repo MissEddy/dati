@@ -171,7 +171,16 @@ function showResults(results) {
 function renderQuestions() {
   const box = document.getElementById('questions');
   box.innerHTML = '';
-  let lastBg = '';
+  // 统计连续同背景的题目组大小：多题组显示"第X题"，单题组不显示
+  const groupSize = new Array(questions.length).fill(1);
+  let cnt = 0;
+  for (let i = 0; i < questions.length; i++) {
+    cnt++;
+    if (i === questions.length - 1 || questions[i].background !== questions[i + 1].background) {
+      for (let j = i - cnt + 1; j <= i; j++) groupSize[j] = cnt;
+      cnt = 0;
+    }
+  }
   questions.forEach((q, i) => {
     const wrap = document.createElement('div');
     wrap.className = 'question';
@@ -180,14 +189,18 @@ function renderQuestions() {
       const tag = isJudge ? '' : `<span class="tag">${TAG[oi]}.</span>`;
       return `<div class="opt" data-q="${q.id}" data-val="${o}">${tag}${o}</div>`;
     }).join('');
-    // 案例背景：同一故事的连续题目只展示一次
-    const bgHtml = (q.background && q.background !== lastBg)
+    // 案例背景：同一故事的连续题目只展示一次（放在最上方）
+    const isNewBg = i === 0 || q.background !== questions[i - 1].background;
+    const bgHtml = (q.background && isNewBg)
       ? `<div class="q-bg"><div class="q-bg-label">📖 案例背景</div><div class="q-bg-text">${q.background}</div></div>`
       : '';
-    lastBg = q.background || '';
+    // 该案例只有一题时不显示"第X题"；多题时显示在背景下方
+    const qnoHtml = (groupSize[i] > 1)
+      ? `<div class="qno">第 ${i + 1} 题 · ${isJudge ? '判断题' : '单选题'}</div>`
+      : '';
     wrap.innerHTML = `
-      <div class="qno">第 ${i + 1} 题 · ${isJudge ? '判断题' : '单选题'}</div>
       ${bgHtml}
+      ${qnoHtml}
       <div class="qtext">${q.text}</div>
       <div class="opts">${opts}</div>`;
     box.appendChild(wrap);
