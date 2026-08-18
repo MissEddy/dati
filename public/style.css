@@ -20,12 +20,16 @@
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 body {
   font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", -apple-system, sans-serif;
   color: var(--text);
   background: linear-gradient(180deg, #f2f6fc 0%, #e8eef8 100%);
   min-height: 100vh;
   line-height: 1.65;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  -webkit-overflow-scrolling: touch;
 }
 
 .container { max-width: 1120px; margin: 0 auto; padding: 22px 20px 40px; }
@@ -114,7 +118,7 @@ h2 { color: var(--blue); font-size: 20px; margin: 26px 0 8px; padding-bottom: 8p
 .stat .label { font-size: 15px; opacity: .92; }
 
 /* ---------- 答题页（手机） ---------- */
-.quiz { max-width: 580px; margin: 0 auto; padding: 18px 16px 40px; }
+.quiz { max-width: 620px; margin: 0 auto; padding: 18px 16px calc(36px + env(safe-area-inset-bottom)); }
 .quiz .qhead { text-align: center; margin-bottom: 18px; }
 .quiz .qhead h1 {
   font-size: 24px; color: var(--blue); margin: 4px 0;
@@ -124,7 +128,7 @@ h2 { color: var(--blue); font-size: 20px; margin: 26px 0 8px; padding-bottom: 8p
 .quiz .qhead .subtitle { font-size: 14px; color: var(--muted); }
 .quiz .nick-row { display: flex; gap: 8px; margin-bottom: 14px; }
 .quiz .nick-row input {
-  flex: 1; padding: 12px 14px; font-size: 16px;
+  flex: 1; padding: 12px 14px; font-size: 16px; min-height: 48px;
   border: 1.5px solid var(--line); border-radius: 12px; outline: none;
   transition: border-color .15s, box-shadow .15s;
 }
@@ -148,10 +152,12 @@ h2 { color: var(--blue); font-size: 20px; margin: 26px 0 8px; padding-bottom: 8p
 .quiz .opts { display: flex; flex-wrap: wrap; gap: 10px; }
 .quiz .opt {
   flex: 1 1 44%; padding: 13px 10px;
+  min-height: 46px; display: flex; align-items: center; justify-content: center;
   border: 2px solid var(--line); border-radius: 12px;
   font-size: 15px; text-align: center; cursor: pointer; background: #fff;
   user-select: none; transition: all .15s;
 }
+.quiz .opt:active { transform: scale(.97); background: #eef4ff; }
 .quiz .opt:hover { border-color: var(--blue3); background: #f2f7ff; }
 .quiz .opt.sel {
   border-color: var(--blue2);
@@ -162,7 +168,7 @@ h2 { color: var(--blue); font-size: 20px; margin: 26px 0 8px; padding-bottom: 8p
 .quiz .opt .tag { font-weight: 700; margin-right: 6px; }
 .quiz .submit {
   width: 100%; padding: 15px; font-size: 18px; margin-top: 6px;
-  border-radius: 14px;
+  border-radius: 14px; min-height: 52px;
 }
 .quiz .success { text-align: center; padding: 50px 20px; animation: fadeUp .5s ease; }
 .quiz .success .big { font-size: 28px; font-weight: 800; color: var(--green); }
@@ -195,12 +201,12 @@ h2 { color: var(--blue); font-size: 20px; margin: 26px 0 8px; padding-bottom: 8p
 .gate .gate-title { font-size: 21px; font-weight: 800; color: var(--blue); margin: 12px 0 4px; letter-spacing: 1px; }
 .gate p { margin: 4px 0 0; }
 .gate input {
-  width: 100%; padding: 13px 14px; font-size: 17px; margin-top: 18px;
+  width: 100%; padding: 13px 14px; font-size: 17px; margin-top: 18px; min-height: 48px;
   border: 1.5px solid var(--line); border-radius: 12px; outline: none; text-align: center;
   transition: border-color .15s, box-shadow .15s;
 }
 .gate input:focus { border-color: var(--blue3); box-shadow: 0 0 0 3px rgba(59,130,246,.15); }
-.gate .gate-btn { width: 100%; margin-top: 16px; padding: 14px; font-size: 17px; border-radius: 12px; }
+.gate .gate-btn { width: 100%; margin-top: 16px; padding: 14px; font-size: 17px; border-radius: 12px; min-height: 48px; }
 .gate-err { color: var(--red); font-size: 13px; margin-top: 12px; }
 
 /* 答题人徽标 */
