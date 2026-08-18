@@ -13,11 +13,6 @@
     <div class="subtitle" id="subtitle"></div>
   </div>
 
-  <div class="stat-row">
-    <div class="stat"><div class="num" id="st-participants">0</div><div class="label">参与人数</div></div>
-    <div class="stat"><div class="num" id="st-rate">--</div><div class="label">总体正确率</div></div>
-  </div>
-
   <!-- 双栏布局：两大部分同屏展示 -->
   <div class="display-grid">
     <div class="col">
@@ -53,8 +48,6 @@ function render(st) {
   document.getElementById('subtitle').textContent = sec.subtitle || '';
   document.title = sec.title + ' · 实时展示';
   document.getElementById('update-hint').textContent = fmtTime(Date.now());
-  document.getElementById('st-participants').textContent = sec.participants;
-  document.getElementById('st-rate').textContent = sec.answeredTotal ? Math.round(sec.correctTotal / sec.answeredTotal * 100) + '%' : '--';
 
   // 一、各题答题情况：回答人数、正确率、各选项选择占比、正确答案
   const box = document.getElementById('questions');
