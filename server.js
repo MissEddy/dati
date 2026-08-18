@@ -28,6 +28,8 @@ app.use((req, res, next) => {
 const DATA_DIR = path.join(__dirname, 'data');
 const QUESTIONS_FILE = path.join(__dirname, 'questions.json');
 const DB_FILE = path.join(DATA_DIR, 'quiz.db');
+// 确保数据目录存在（git 克隆/全新环境没有 data/ 时自动创建）
+fs.mkdirSync(DATA_DIR, { recursive: true });
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC_URL = (process.env.PUBLIC_URL || '').replace(/\/+$/, '');
