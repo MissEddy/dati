@@ -147,14 +147,25 @@ h2 { color: var(--blue); font-size: 20px; margin: 26px 0 8px; padding-bottom: 8p
   border-radius: 10px; font-size: 15px; line-height: 1.7; color: #3a4a66;
 }
 .quiz .question .q-bg-label { font-size: 12px; font-weight: 700; color: var(--blue2); margin-bottom: 4px; letter-spacing: 1px; }
-.quiz .opts { display: flex; flex-wrap: wrap; gap: 10px; }
+.quiz .opts { display: flex; flex-direction: column; gap: 10px; }
+.quiz .opts-judge { flex-direction: row; }
+.quiz .opts-judge .opt { justify-content: center; flex: 1; }
 .quiz .opt {
-  flex: 1 1 44%; padding: 13px 10px;
-  min-height: 46px; display: flex; align-items: center; justify-content: center;
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 12px 14px; min-height: 48px;
   border: 2px solid var(--line); border-radius: 12px;
-  font-size: 15px; text-align: center; cursor: pointer; background: #fff;
+  font-size: 16px; text-align: left; cursor: pointer; background: #fff;
   user-select: none; transition: all .15s;
 }
+.quiz .opt .opt-badge {
+  flex-shrink: 0; width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; background: #eef3fb; color: var(--muted);
+  font-weight: 700; font-size: 14px;
+}
+.quiz .opt .opt-text { flex: 1; }
+.quiz .opt-ok .opt-badge { background: #e6f6ec; color: var(--green); }
+.quiz .opt-no .opt-badge { background: #fdeaea; color: var(--red); }
 .quiz .opt:active { transform: scale(.97); background: #eef4ff; }
 .quiz .opt:hover { border-color: var(--blue3); background: #f2f7ff; }
 .quiz .opt.sel {
@@ -163,7 +174,10 @@ h2 { color: var(--blue); font-size: 20px; margin: 26px 0 8px; padding-bottom: 8p
   color: var(--blue); font-weight: 700;
   box-shadow: 0 2px 8px rgba(31,95,208,.2);
 }
-.quiz .opt .tag { font-weight: 700; margin-right: 6px; }
+.quiz .opt.sel .opt-badge {
+  background: linear-gradient(135deg, var(--blue2), var(--blue3));
+  color: #fff;
+}
 .quiz .submit {
   width: 100%; padding: 15px; font-size: 18px; margin-top: 6px;
   border-radius: 14px; min-height: 52px;
@@ -216,8 +230,9 @@ h2 { color: var(--blue); font-size: 20px; margin: 26px 0 8px; padding-bottom: 8p
 .nick-badge a { color: var(--muted); font-size: 12px; margin-left: 4px; text-decoration: none; }
 
 /* ---------- 答题结果页 ---------- */
-.result-head { text-align: center; margin: 0 0 20px; }
-.result-score { font-size: 36px; font-weight: 800; color: var(--blue); margin-top: 6px; }
+.result-head { text-align: center; margin: 0 0 18px; }
+.result-emoji { font-size: 22px; font-weight: 800; color: var(--blue); }
+.result-score { font-size: 34px; font-weight: 800; color: var(--blue); margin-top: 4px; }
 .result-rank {
   display: inline-block; margin-top: 10px; padding: 6px 18px;
   background: linear-gradient(135deg, #b8860b, #d4a017);
@@ -231,19 +246,18 @@ h2 { color: var(--blue); font-size: 20px; margin: 26px 0 8px; padding-bottom: 8p
 }
 .q-result {
   background: var(--card); border: 1px solid var(--line); border-radius: 14px;
-  padding: 16px 18px; margin-bottom: 14px; box-shadow: var(--shadow-sm);
-  border-left: 6px solid var(--green);
+  padding: 14px 16px; margin-bottom: 12px; box-shadow: var(--shadow-sm);
+  border-left: 5px solid var(--green);
   animation: fadeUp .4s ease;
 }
 .q-result.is-wrong { border-left-color: var(--red); }
+.q-result .q-result-top { display: flex; justify-content: space-between; align-items: center; }
 .q-result .qno { font-size: 12px; font-weight: 700; }
 .q-result.is-right .qno { color: var(--green); }
 .q-result.is-wrong .qno { color: var(--red); }
-.q-result .qtext { font-size: 17px; margin: 8px 0 10px; line-height: 1.6; }
-.q-result .your { font-size: 15px; }
-.q-result .right { font-size: 15px; font-weight: 700; margin-top: 2px; color: var(--green); }
+.q-result .q-icon { font-size: 22px; line-height: 1; }
+.q-result .qtext { font-size: 16px; margin: 8px 0 10px; line-height: 1.6; }
+.q-result .answer-lines { display: flex; flex-direction: column; gap: 3px; }
+.q-result .your { font-size: 14px; color: var(--muted); }
+.q-result .right { font-size: 15px; font-weight: 700; color: var(--green); }
 .q-result.is-wrong .right { color: var(--red); }
-.q-result .explain {
-  margin-top: 10px; padding: 10px 12px; background: #f5f8fd;
-  border-radius: 10px; font-size: 14px; color: var(--muted);
-}

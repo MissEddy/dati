@@ -37,10 +37,10 @@
   <!-- 第三步：答题结果 -->
   <div id="result-wrap" class="hidden">
     <div class="result-head">
+      <div class="result-emoji" id="result-emoji"></div>
       <div class="result-score" id="result-score"></div>
       <div class="result-rank" id="result-rank"></div>
       <div class="result-cum" id="result-cum"></div>
-      <p class="muted">你的答题情况如下，可继续扫其他板块二维码参与答题。</p>
     </div>
     <div id="result-list"></div>
   </div>
@@ -139,7 +139,12 @@ function showResults(results) {
   document.getElementById('quiz-wrap').classList.add('hidden');
   document.getElementById('result-wrap').classList.remove('hidden');
   const correctCount = results.filter(r => r.correct).length;
-  document.getElementById('result-score').textContent = '答对 ' + correctCount + ' / ' + results.length + ' 题';
+  const total = results.length;
+  document.getElementById('result-score').textContent = '答对 ' + correctCount + ' / ' + total + ' 题';
+  // 得分表情
+  const rate = total ? correctCount / total : 0;
+  document.getElementById('result-emoji').textContent =
+    rate === 1 ? '🏆 满分！' : rate >= 0.8 ? '🎉 太棒了！' : rate >= 0.5 ? '👍 不错哦！' : rate > 0 ? '💪 继续加油！' : '😅 再接再厉！';
   const list = document.getElementById('result-list');
   list.innerHTML = '';
   results.forEach((r, i) => {
@@ -148,10 +153,15 @@ function showResults(results) {
     const div = document.createElement('div');
     div.className = 'q-result' + (r.correct ? ' is-right' : ' is-wrong');
     div.innerHTML = `
-      <div class="qno">第 ${i + 1} 题 · ${isJudge ? '判断题' : '单选题'} ${r.correct ? '✅ 答对了' : '❌ 答错了'}</div>
+      <div class="q-result-top">
+        <span class="qno">第 ${i + 1} 题 · ${isJudge ? '判断题' : '单选题'}</span>
+        <span class="q-icon">${r.correct ? '✅' : '❌'}</span>
+      </div>
       <div class="qtext">${q ? q.text : ''}</div>
-      <div class="your">你的答案：<b>${r.yourAnswer || '（未作答）'}</b></div>
-      <div class="right">正确答案：<b>${r.correctAnswer}</b></div>`;
+      <div class="answer-lines">
+        <div class="your">你的答案：<b>${r.yourAnswer || '（未作答）'}</b></div>
+        <div class="right">正确答案：<b>${r.correctAnswer}</b></div>
+      </div>`;
     list.appendChild(div);
   });
   // 当前用户累计答题统计（跨板块）+ 总排名
@@ -187,8 +197,9 @@ function renderQuestions() {
     wrap.className = 'question';
     const isJudge = q.type === 'judge';
     const opts = (q.options || []).map((o, oi) => {
-      const tag = isJudge ? '' : `<span class="tag">${TAG[oi]}.</span>`;
-      return `<div class="opt" data-q="${q.id}" data-val="${o}">${tag}${o}</div>`;
+      const badge = isJudge ? (o === '对' ? '✓' : '✗') : TAG[oi];
+      const cls = isJudge ? (o === '对' ? 'opt-ok' : 'opt-no') : '';
+      return `<div class="opt ${cls}" data-q="${q.id}" data-val="${o}"><span class="opt-badge">${badge}</span><span class="opt-text">${o}</span></div>`;
     }).join('');
     // 案例背景：同一故事的连续题目只展示一次（放在最上方）
     const isNewBg = i === 0 || q.background !== questions[i - 1].background;
@@ -203,7 +214,7 @@ function renderQuestions() {
       ${bgHtml}
       ${qnoHtml}
       <div class="qtext">${q.text}</div>
-      <div class="opts">${opts}</div>`;
+      <div class="opts ${isJudge ? 'opts-judge' : ''}">${opts}</div>`;
     box.appendChild(wrap);
   });
   box.querySelectorAll('.opt').forEach(el => {
