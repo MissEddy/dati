@@ -218,6 +218,12 @@ h2 { color: var(--blue); font-size: 20px; margin: 26px 0 8px; padding-bottom: 8p
 /* ---------- 答题结果页 ---------- */
 .result-head { text-align: center; margin: 0 0 20px; }
 .result-score { font-size: 36px; font-weight: 800; color: var(--blue); margin-top: 6px; }
+.result-rank {
+  display: inline-block; margin-top: 10px; padding: 6px 18px;
+  background: linear-gradient(135deg, #b8860b, #d4a017);
+  color: #fff; font-size: 18px; font-weight: 800; border-radius: 999px;
+  box-shadow: 0 3px 10px rgba(212,160,23,.35);
+}
 .result-cum {
   display: inline-block; margin-top: 10px; padding: 7px 18px;
   background: linear-gradient(135deg, #eaf1fc, #dbe7fb);
