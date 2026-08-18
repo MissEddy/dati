@@ -14,6 +14,10 @@ set -e
 
 DOMAIN="${1:-}"
 PORT="3000"
+# 兼容误传：bash deploy.sh https://域名/xxx → 自动去掉协议头和尾部斜杠
+DOMAIN="${DOMAIN#https://}"
+DOMAIN="${DOMAIN#http://}"
+DOMAIN="${DOMAIN%/}"
 
 echo "=============================================="
 echo " 步骤 1/6：检查/安装 Node.js"
