@@ -144,7 +144,7 @@ function showResults(results) {
   // 得分表情
   const rate = total ? correctCount / total : 0;
   document.getElementById('result-emoji').textContent =
-    rate === 1 ? '🏆 满分！' : rate >= 0.8 ? '🎉 太棒了！' : rate >= 0.5 ? '👍 不错哦！' : rate > 0 ? '💪 继续加油！' : '😅 再接再厉！';
+    rate === 1 ? '🏆 满分！' : rate >= 0.8 ? '🎉 太棒了！' : rate >= 0.5 ? '👍 不错哦！' : rate > 0 ? '🌟 继续加油！' : '😅 再接再厉！';
   const list = document.getElementById('result-list');
   list.innerHTML = '';
   results.forEach((r, i) => {
