@@ -12,7 +12,7 @@
   --line: #e4eaf3;
   --text: #2b3447;
   --muted: #7c8798;
-  --shadow: 0 4px 16px rgba(31, 78, 156, .08);
+  --shadow: 0 4px 18px rgba(31, 78, 156, .14);
 }
 
 * { box-sizing: border-box; }
@@ -20,7 +20,7 @@ html, body { margin: 0; padding: 0; }
 body {
   font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", -apple-system, sans-serif;
   color: var(--text);
-  background: linear-gradient(180deg, #f8fafd 0%, #eef3fa 100%);
+  background: linear-gradient(180deg, #e9eef6 0%, #d7e1ef 100%);
   min-height: 100vh;
   line-height: 1.7;
   -webkit-tap-highlight-color: transparent;
@@ -191,7 +191,7 @@ table.rank th:last-child, table.rank td:last-child { white-space: nowrap; }
 .screen-fixed .col { min-height: 0; overflow-y: auto; padding-right: 6px; scrollbar-width: thin; }
 .screen-fixed .col h2 {
   position: sticky; top: 0; z-index: 2;
-  background: #f6f8fb; padding: 6px 8px; margin: 0 0 8px; font-size: 20px;
+  background: #e9eef6; padding: 6px 8px; margin: 0 0 8px; font-size: 20px;
 }
 .screen-fixed .rank-title {
   flex-shrink: 0; margin: 4px 0 6px; font-size: 20px; padding: 4px 8px;
