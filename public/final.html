@@ -86,14 +86,15 @@ function render(st) {
     window._prevUsers = {};
     return;
   }
-  const prevUsers = window._prevUsers || {};
+  const prevUsers = window._prevUsers || null;
+  const firstRun = !prevUsers;
   const nowUsers = {};
   st.users.forEach(u => {
     nowUsers[u.nickname] = u.correct;
     const rate = u.total ? Math.round(u.correct / u.total * 100) : 0;
     const tr = document.createElement('tr');
     if (u.rank === 1) tr.className = 'gold-row';
-    if (!(u.nickname in prevUsers)) tr.classList.add('flash-new');
+    if (!firstRun && !(u.nickname in prevUsers)) tr.classList.add('flash-new');
     tr.innerHTML = `
       <td>${MEDALS[u.rank] ? MEDALS[u.rank] + ' ' : ''}第 ${u.rank} 名</td>
       <td>${esc(u.nickname)}</td>
@@ -102,6 +103,7 @@ function render(st) {
       <td>${rate}%</td>
       <td>${u.sections}</td>`;
     body.appendChild(tr);
+    if (firstRun) return;
     if (!(u.nickname in prevUsers)) {
       queueToast('🎉 ' + u.nickname + ' 加入答题');
     } else if (prevUsers[u.nickname] < u.correct) {

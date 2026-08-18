@@ -103,13 +103,14 @@ function render(st) {
   } else {
     pk.textContent = '👑 ' + sec.ranking[0].nickname + ' 暂列第一';
   }
-  // 检测新提交（实时性：某人刚答完）
+  // 检测新提交（实时性：某人刚答完；首屏只记录基线不弹横幅）
+  const firstRun = !window._prevRank;
   const prevRank = window._prevRank || {};
   const nowRank = {};
   sec.ranking.forEach(u => {
     nowRank[u.nickname] = u.correct;
     const tr = document.createElement('tr');
-    const isNew = !(u.nickname in prevRank);
+    const isNew = !firstRun && !(u.nickname in prevRank);
     tr.className = RANK_CLS[u.rank] || '';
     if (isNew) tr.classList.add('flash-new');
     tr.innerHTML = `
