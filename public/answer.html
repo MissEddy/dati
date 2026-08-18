@@ -170,7 +170,7 @@ function showResults(results) {
     if (me) {
       const pct = me.total ? Math.round(me.correct / me.total * 100) : 0;
       document.getElementById('result-cum').textContent =
-        '累计答题 ' + me.total + ' 题 · 答对 ' + me.correct + ' 题（' + pct + '%）';
+        '累计答题 ' + me.total + ' 道 · 答对 ' + me.correct + ' 道 · 正确率 ' + pct + '%';
       const medal = me.rank === 1 ? '🥇' : me.rank === 2 ? '🥈' : me.rank === 3 ? '🥉' : '';
       document.getElementById('result-rank').textContent =
         medal + ' 当前总排名：第 ' + me.rank + ' 名';
