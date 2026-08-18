@@ -162,7 +162,7 @@ function showResults(results) {
     if (me) {
       const pct = me.total ? Math.round(me.correct / me.total * 100) : 0;
       document.getElementById('result-cum').textContent =
-        '累计答题 ' + me.total + ' 题 · 答对 ' + me.correct + ' 题（' + pct + '%）· 参与 ' + me.sections + ' 个板块';
+        '累计答题 ' + me.total + ' 题 · 答对 ' + me.correct + ' 题（' + pct + '%）';
     }
   }).catch(() => {});
 }
