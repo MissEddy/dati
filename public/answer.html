@@ -152,6 +152,8 @@ function showResults(results) {
     const isJudge = q ? q.type === 'judge' : false;
     const div = document.createElement('div');
     div.className = 'q-result' + (r.correct ? ' is-right' : ' is-wrong');
+    // 正确的题不再展示"正确答案"，只给错误的题展示
+    const rightHtml = r.correct ? '' : `<div class="right">正确答案：<b>${r.correctAnswer}</b></div>`;
     div.innerHTML = `
       <div class="q-result-top">
         <span class="qno">第 ${i + 1} 题 · ${isJudge ? '判断题' : '单选题'}</span>
@@ -160,7 +162,7 @@ function showResults(results) {
       <div class="qtext">${q ? q.text : ''}</div>
       <div class="answer-lines">
         <div class="your">你的答案：<b>${r.yourAnswer || '（未作答）'}</b></div>
-        <div class="right">正确答案：<b>${r.correctAnswer}</b></div>
+        ${rightHtml}
       </div>`;
     list.appendChild(div);
   });
