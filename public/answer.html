@@ -27,7 +27,6 @@
   <div id="result-wrap" class="hidden">
     <div class="result-head">
       <div class="result-emoji" id="result-emoji"></div>
-      <div class="result-score" id="result-score"></div>
     </div>
     <div id="result-list"></div>
   </div>
@@ -151,7 +150,6 @@ function showResults(results) {
   document.getElementById('result-wrap').classList.remove('hidden');
   const correctCount = results.filter(r => r.correct).length;
   const total = results.length;
-  document.getElementById('result-score').textContent = '答对 ' + correctCount + ' / ' + total + ' 题';
   // 得分表情
   const rate = total ? correctCount / total : 0;
   document.getElementById('result-emoji').textContent =
