@@ -62,23 +62,19 @@ h2 {
 .col { min-width: 0; }
 @media (max-width: 1100px) { .display-grid { grid-template-columns: 1fr; } }
 
-/* ---------- 各题答题情况卡片（突出精致） ---------- */
+/* ---------- 各题答题情况卡片（扁平化，无3D阴影） ---------- */
 .q-card {
-  padding: 18px 22px; margin: 14px 0; border-radius: 16px;
+  padding: 18px 22px; margin: 14px 0; border-radius: 12px;
   background: var(--card); border: 1px solid #e0e7f2;
-  box-shadow: 0 8px 24px rgba(31, 78, 156, .10);
-  position: relative; overflow: hidden;
 }
-/* 顶部渐变装饰条 */
-.q-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
-  background: linear-gradient(90deg, var(--blue), var(--blue2), #8fb1e8);
+.q-card .q-top {
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  padding-bottom: 12px; border-bottom: 1px solid #eef1f7; margin-bottom: 12px;
 }
-.q-card .q-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .q-card .q-no {
   display: inline-flex; align-items: center; gap: 6px;
   background: #eef3fb; color: var(--blue);
-  padding: 5px 14px; border-radius: 999px;
+  padding: 5px 14px; border-radius: 8px;
   font-size: 13px; font-weight: 700; letter-spacing: 1px;
 }
 .q-card .q-right { display: flex; flex-direction: column; align-items: flex-end; gap: 0; }
@@ -88,8 +84,8 @@ h2 {
 .q-card .q-rate.mid { color: #c97b3d; }
 .q-card .q-rate.low { color: #c0553f; }
 .q-card .q-text {
-  font-size: 19px; font-weight: 700; color: var(--text);
-  margin: 10px 0 12px; line-height: 1.6;
+  font-size: 21px; font-weight: 700; color: var(--text);
+  text-align: center; margin: 4px 0 14px; line-height: 1.6;
 }
 /* 案例背景 */
 .q-card .q-bg {
@@ -105,18 +101,20 @@ h2 {
   flex-shrink: 0;
 }
 .q-card .opt-row.is-correct .opt-label { color: var(--green); }
-.q-card .opt-bar { flex: 1; height: 15px; background: #eef2f8; border-radius: 999px; overflow: hidden; }
+.q-card .opt-bar { flex: 1; height: 13px; background: #eef2f8; border-radius: 999px; overflow: hidden; }
 .q-card .opt-bar-in {
   display: block; height: 100%;
-  background: linear-gradient(90deg, #9db8e8, #6d93d8);
+  background: #7fa6de;
   border-radius: 999px;
 }
-.q-card .opt-row.is-correct .opt-bar-in { background: linear-gradient(90deg, #66bb8a, #3e9a6b); }
+.q-card .opt-row.is-correct .opt-bar-in { background: #58a97c; }
 .q-card .opt-pct { width: 96px; text-align: left; color: var(--muted); white-space: nowrap; font-weight: 700; }
 .q-card .opt-row.is-correct .opt-pct { color: var(--green); }
 .q-card .opt-count { font-size: 12px; }
 .q-card .q-answer {
-  margin-top: 10px; font-size: 16px; color: var(--green); font-weight: 700;
+  margin-top: 12px; padding: 8px 16px; display: inline-block;
+  background: #f0f9f4; border: 1px solid #cde7d8;
+  border-radius: 8px; color: #1e7a4a; font-size: 16px; font-weight: 700;
 }
 
 /* ---------- 实时动态（旧样式保留兼容） ---------- */
