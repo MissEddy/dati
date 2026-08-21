@@ -194,24 +194,3 @@ table.rank th:last-child, table.rank td:last-child { white-space: nowrap; }
 .hidden { display: none !important; }
 .muted { color: var(--muted); }
 .small { font-size: 12px; }
-
-/* ---------- PK 实时性：提交横幅/闪动/领先/易主 ---------- */
-.toast-box {
-  position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
-  z-index: 999; display: flex; flex-direction: column; align-items: center; gap: 8px;
-  pointer-events: none;
-}
-.toast {
-  background: #fff; border: 1.5px solid #d4a017; color: #7a5c00;
-  box-shadow: 0 4px 18px rgba(31,78,156,.14);
-  padding: 8px 20px; border-radius: 999px;
-  font-size: 16px; font-weight: 700; white-space: nowrap;
-  animation: toastIn .3s ease, toastOut .3s ease 2.2s forwards;
-}
-@keyframes toastIn { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: none; } }
-@keyframes toastOut { to { opacity: 0; transform: translateY(-12px); } }
-.flash-new { animation: flashRow 1.8s ease; }
-@keyframes flashRow { 0% { background: #fff6d8; } 100% { background: transparent; } }
-.podium-pulse { animation: podiumPulse .9s ease; }
-@keyframes podiumPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.09); } }
-.pk-status { font-size: 14px; color: var(--blue); font-weight: 700; margin: 0 0 8px; min-height: 20px; }
