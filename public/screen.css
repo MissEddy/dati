@@ -85,13 +85,13 @@ h2 {
 .q-card .q-rate.low { color: #c0553f; }
 .q-card .q-text {
   font-size: 21px; font-weight: 700; color: var(--text);
-  text-align: center; margin: 4px 0 14px; line-height: 1.6;
+  text-align: left; margin: 4px 0 14px; line-height: 1.6;
 }
 /* 案例背景 */
 .q-card .q-bg {
   margin: 0 0 10px; padding: 10px 14px;
   background: #f4f8fd; border-left: 4px solid #b9cdea;
-  border-radius: 8px; font-size: 14px; color: #5b6d8a; line-height: 1.7;
+  border-radius: 8px; font-size: 17px; color: #5b6d8a; line-height: 1.7;
 }
 /* 选项占比条（更粗更醒目） */
 .q-card .q-opts { display: flex; flex-direction: column; gap: 6px; }
