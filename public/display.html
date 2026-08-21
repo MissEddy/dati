@@ -29,7 +29,7 @@ function render(st) {
   document.getElementById('subtitle').textContent = sec.subtitle || '';
   document.title = sec.title + ' · 展示';
 
-  // 各题答题情况：回答人数、正确率、各选项选择占比、正确答案
+  // 各题答题情况：回答人数、正确率（大字彩色分级）、各选项选择占比、正确答案
   const box = document.getElementById('questions');
   box.innerHTML = '';
   let lastBg = '';
@@ -49,12 +49,17 @@ function render(st) {
       ? `<div class="q-bg">📖 ${q.background}</div>`
       : '';
     lastBg = q.background || '';
+    // 正确率颜色分级：≥80% 绿 / ≥50% 橙 / <50% 红
+    const rateCls = q.rate >= 80 ? 'high' : q.rate >= 50 ? 'mid' : 'low';
     const div = document.createElement('div');
     div.className = 'q-card';
     div.innerHTML = `
       <div class="q-top">
         <span class="q-no">第 ${i + 1} 题 · ${q.type === 'judge' ? '判断题' : '单选题'}</span>
-        <span class="q-meta">👥 回答 ${q.answered} 人 · 🎯 正确率 <b>${q.rate}%</b></span>
+        <span class="q-right">
+          <span class="q-meta">👥 ${q.answered} 人回答</span>
+          <span class="q-rate ${rateCls}">${q.rate}%</span>
+        </span>
       </div>
       ${bgHtml}
       <div class="q-text">${q.text}</div>
