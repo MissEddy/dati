@@ -92,6 +92,7 @@ function renderQuestions() {
       ? `<div class="q-bg"><div class="q-bg-label">📖 案例背景</div><div class="q-bg-text">${q.background}</div></div>`
       : '';
     wrap.innerHTML = `
+      <div class="qno">第 ${i + 1} 题 · ${isJudge ? '判断题' : '单选题'}</div>
       ${bgHtml}
       <div class="qtext">${q.text}</div>
       <div class="opts ${isJudge ? 'opts-judge' : ''}">${opts}</div>`;
@@ -167,7 +168,6 @@ function showResults(results) {
     div.innerHTML = `
       <div class="q-result-top">
         <span class="qno">第 ${i + 1} 题 · ${isJudge ? '判断题' : '单选题'}</span>
-        <span class="q-icon">${r.correct ? '✅' : '❌'}</span>
       </div>
       <div class="qtext">${q ? q.text : ''}</div>
       <div class="answer-lines">

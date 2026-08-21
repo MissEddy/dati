@@ -258,9 +258,11 @@ h2 { color: var(--blue); font-size: 20px; margin: 26px 0 8px; padding-bottom: 8p
 .q-result .qno { font-size: 12px; font-weight: 700; }
 .q-result.is-right .qno { color: var(--green); }
 .q-result.is-wrong .qno { color: var(--red); }
-.q-result .q-icon { font-size: 22px; line-height: 1; }
 .q-result .qtext { font-size: 16px; margin: 8px 0 10px; line-height: 1.6; }
 .q-result .answer-lines { display: flex; flex-direction: column; gap: 3px; }
-.q-result .your { font-size: 14px; color: var(--muted); }
+/* 只用颜色区分对错（无对勾/红叉图标） */
+.q-result .your { font-size: 14px; }
+.q-result.is-right .your { color: var(--green); font-weight: 600; }
+.q-result.is-wrong .your { color: var(--red); font-weight: 600; }
 .q-result .right { font-size: 15px; font-weight: 700; color: var(--green); }
 .q-result.is-wrong .right { color: var(--red); }
