@@ -161,20 +161,7 @@ table.rank th:last-child, table.rank td:last-child { white-space: nowrap; }
 .screen-fixed .podium-col .step.h2 { height: 56px; background: linear-gradient(180deg, #d5dbe4, #aeb8c6); font-size: 17px; }
 .screen-fixed .podium-col .step.h3 { height: 38px; background: linear-gradient(180deg, #e6a564, #c97b3d); font-size: 15px; }
 
-/* ---------- 实时更新提示（呼吸灯） ---------- */
-.live-hint {
-  text-align: center; margin-top: 22px; padding-top: 14px;
-  border-top: 1px dashed var(--line);
-  color: var(--muted); font-size: 14px; letter-spacing: 2px;
-}
-.live-hint .dot {
-  display: inline-block; width: 9px; height: 9px; border-radius: 50%;
-  background: var(--green); margin-right: 8px; vertical-align: middle;
-  animation: pulse 1.2s ease-in-out infinite;
-}
-@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
-
-/* ---------- 固定屏幕布局（展示页/总览页） ---------- */
+/* ---------- 固定屏幕布局（展示页） ---------- */
 .screen-fixed {
   width: 100%; height: 100vh; overflow: hidden;
   display: flex; flex-direction: column;
@@ -186,7 +173,6 @@ table.rank th:last-child, table.rank td:last-child { white-space: nowrap; }
 .screen-fixed .stat-row { flex-shrink: 0; margin: 0 0 4px; }
 .screen-fixed .stat { padding: 10px 10px; min-width: 150px; }
 .screen-fixed .stat .num { font-size: 38px; }
-.screen-fixed .live-hint { flex-shrink: 0; margin-top: 6px; padding-top: 8px; }
 .screen-fixed .display-grid { flex: 1; min-height: 0; align-items: stretch; }
 .screen-fixed .col { min-height: 0; overflow-y: auto; padding-right: 6px; scrollbar-width: thin; }
 .screen-fixed .col h2 {

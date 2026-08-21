@@ -15,14 +15,11 @@
 
   <!-- 各题答题情况（单栏全宽，可滚动） -->
   <div class="col" id="questions"></div>
-
-  <div class="live-hint"><span class="dot"></span>实时更新中 · 最后更新 <span id="update-hint">--:--:--</span></div>
 </div>
 
 <script>
 const params = new URLSearchParams(location.search);
 const sectionId = params.get('section');
-const fmtTime = (ts) => { const d = new Date(ts); return d.toLocaleTimeString('zh-CN', { hour12: false }); };
 const LETTER = ['A', 'B', 'C', 'D', 'E', 'F'];
 
 function render(st) {
@@ -30,8 +27,7 @@ function render(st) {
   if (!sec) { document.getElementById('title').textContent = '板块不存在'; return; }
   document.getElementById('title').textContent = sec.title;
   document.getElementById('subtitle').textContent = sec.subtitle || '';
-  document.title = sec.title + ' · 实时展示';
-  document.getElementById('update-hint').textContent = fmtTime(Date.now());
+  document.title = sec.title + ' · 展示';
 
   // 各题答题情况：回答人数、正确率、各选项选择占比、正确答案
   const box = document.getElementById('questions');
@@ -68,11 +64,8 @@ function render(st) {
   });
 }
 
-function tick() {
-  fetch('/api/state', { cache: 'no-store' }).then(r => r.json()).then(render).catch(() => {});
-}
-tick();
-setInterval(tick, 1000);
+// 打开时加载一次（不自动刷新）
+fetch('/api/state', { cache: 'no-store' }).then(r => r.json()).then(render).catch(() => {});
 </script>
 </body>
 </html>
