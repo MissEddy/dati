@@ -17,7 +17,6 @@
 </div>
 
 <div class="container">
-  <div class="stat-row" id="overview"></div>
   <h2>答题板块（共 <span id="sec-count">0</span> 个，每个板块一个二维码）</h2>
   <div class="section-grid" id="grid"></div>
 </div>
@@ -125,19 +124,7 @@ function fallbackCopy(t, ok) {
   } catch (e) { /* 静默失败 */ }
 }
 
-function refreshOverview() {
-  fetch('/api/state').then(r => r.json()).then(st => {
-    const ov = document.getElementById('overview');
-    ov.innerHTML = `
-      <div class="stat"><div class="num">${st.totalUsers}</div><div class="label">参与人数</div></div>
-      <div class="stat"><div class="num">${st.totalAnswered}</div><div class="label">已答题目</div></div>
-      <div class="stat"><div class="num">${st.totalCorrect}</div><div class="label">答对题目</div></div>`;
-  });
-}
-
 loadMeta();
-refreshOverview();
-setInterval(refreshOverview, 2000);
 </script>
 </body>
 </html>

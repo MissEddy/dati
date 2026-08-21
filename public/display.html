@@ -37,9 +37,12 @@ function render(st) {
     const optsHtml = (q.options || []).map((o, oi) => {
       const label = q.type === 'judge' ? o.text : LETTER[oi];
       const correct = o.text === q.correctAnswer;
+      // 选择题：字母(A/B/C/D) + 选项文字名称；判断题：对/错本身即是名称
+      const nameHtml = q.type === 'judge' ? '' : `<span class="opt-name">${o.text}</span>`;
       return `
         <div class="opt-row ${correct ? 'is-correct' : ''}">
           <span class="opt-label">${label}</span>
+          ${nameHtml}
           <span class="opt-bar"><span class="opt-bar-in" style="width:${o.pct}%"></span></span>
           <span class="opt-pct">${o.pct}%<span class="opt-count">（${o.count}人）</span></span>
         </div>`;
