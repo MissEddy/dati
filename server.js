@@ -209,17 +209,6 @@ app.get('/api/my-result', (req, res) => {
   res.json({ submitted: true, results: buildResults(sec, rec) });
 });
 
-// 该设备累计统计（跨板块）
-app.get('/api/my-stats', (req, res) => {
-  const device = String(req.cookies.device_id || req.query.deviceId || '').trim();
-  let total = 0, correct = 0;
-  records.filter((r) => r.deviceId === device).forEach((r) => {
-    correct += r.answers.filter((a) => a.correct).length;
-    total += r.answers.length;
-  });
-  res.json({ total, correct });
-});
-
 app.post('/api/submit', (req, res) => {
   const { section, answers, deviceId } = req.body || {};
   if (!section || !Array.isArray(answers)) {

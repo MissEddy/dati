@@ -28,7 +28,6 @@
     <div class="result-head">
       <div class="result-emoji" id="result-emoji"></div>
       <div class="result-score" id="result-score"></div>
-      <div class="result-cum" id="result-cum"></div>
     </div>
     <div id="result-list"></div>
   </div>
@@ -177,14 +176,6 @@ function showResults(results) {
       </div>`;
     list.appendChild(div);
   });
-  // 该设备累计统计（跨板块）
-  fetch('/api/my-stats?deviceId=' + encodeURIComponent(getDeviceId())).then(r => r.json()).then(s => {
-    if (s && s.total) {
-      const pct = Math.round(s.correct / s.total * 100);
-      document.getElementById('result-cum').textContent =
-        '累计答题 ' + s.total + ' 道 · 答对 ' + s.correct + ' 道 · 正确率 ' + pct + '%';
-    }
-  }).catch(() => {});
 }
 
 load();
